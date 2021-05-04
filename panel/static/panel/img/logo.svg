@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="72.244499mm"
+   height="36.534771mm"
+   viewBox="0 0 72.244499 36.534771"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
+   sodipodi:docname="logo.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="2"
+     inkscape:cx="92.26985"
+     inkscape:cy="102.378"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1680"
+     inkscape:window-height="984"
+     inkscape:window-x="1680"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Ebene 2"
+     transform="translate(-58.619798,-55.725225)" />
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-58.619798,-55.725225)">
+    <path
+       style="fill:#ffffff;fill-opacity:0;stroke:#7579e7;stroke-width:2.6210463;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+       d="m 89.363332,60.65616 c -2.701917,-2.32683 -8.843984,-2.73583 -12.49642,-2.03438 -6.063974,1.16458 -9.021983,4.75208 -8.43212,9.48329 -16.70664,2.9783 -4.95815,24.46103 2.799079,16.72436 4.040629,9.682 23.195434,6.53984 25.899379,-0.21828 10.07933,6.87398 25.35945,6.5679 25.94252,-2.39785 12.11091,0.38401 5.20948,-18.78542 -4.30999,-15.06714 -1.60763,-5.94694 -7.37057,-5.37902 -7.43225,-5.38418 -5.76375,-7.25723 -13.366926,-4.94786 -21.970198,-1.10582 z"
+       id="path3713"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="csccccccc" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8.98987961px;line-height:1.25;font-family:monospace;-inkscape-font-specification:'monospace, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#db6400;fill-opacity:1;stroke:none;stroke-width:0.21492998"
+       x="61.459198"
+       y="81.234276"
+       id="text4525"
+       transform="scale(1.0335971,0.96749497)"><tspan
+         sodipodi:role="line"
+         id="tspan821"
+         x="61.459198"
+         y="81.234276"
+         style="stroke-width:0.21492998">cloudserver</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:3.58563328px;line-height:1.25;font-family:monospace;-inkscape-font-specification:'monospace, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#2ca02c;fill-opacity:1;stroke:none;stroke-width:0.08572567;"
+       x="103.9828"
+       y="85.325584"
+       id="text4525-3"
+       transform="scale(1.0335971,0.96749498)"><tspan
+         sodipodi:role="line"
+         id="tspan841"
+         x="103.9828"
+         y="85.325584">.click</tspan></text>
+  </g>
+</svg>
