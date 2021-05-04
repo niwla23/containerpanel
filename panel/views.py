@@ -1,13 +1,26 @@
+import uuid
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import SESSION_KEY
+from django.contrib.auth.models import User
+from django.contrib.sessions.models import Session
 import docker
 import json
 from .models import Container
 from .forms import PowerActionForm
 from .helpers import can_manage_container
 from django.conf import settings
+import socketio
+from datetime import datetime
+sio = socketio.Server()
 
 
+def login(request):
+    return redirect("oidc_authentication_init")
+
+
+@login_required
 def index(request):
     if request.user.is_authenticated:
         containers = []
@@ -78,3 +91,26 @@ def power_action(request, container_id):
                 return redirect("index")
 
         return redirect("container", container_id)
+
+
+@sio.event
+def i_want_logs(sid, message):
+    print("cookie", message['cookie'])
+    try:
+        session = Session.objects.get(session_key=message['cookie'])
+        session_data = session.get_decoded()
+        _throw_away = session_data[SESSION_KEY]
+        uid = session_data.get('_auth_user_id')
+        user: User = User.objects.get(id=uid)
+        db_data = get_object_or_404(Container, pk=message["container_id"])
+        if can_manage_container(db_data, user.id):
+            client = docker.from_env()
+            current_container = client.containers.get(db_data.name)
+            for line in current_container.logs(stream=True, follow=True, since=datetime.now()):
+                sio.emit("logs", {'line': line.decode('utf-8')}, room=sid)
+                sio.sleep(0.01)
+
+    except (Session.DoesNotExist, KeyError):
+        pass
+
+

@@ -67,12 +67,8 @@
         </div>
         <div class="bg-gray-800 p-4 rounded-md flex-grow ">
             <h2 class="text-lg">Console</h2>
-            <div class="bg-gray-900 p-2 rounded-md overflow-y-scroll h-64">
-                <code>
-                    Console and logs are currently not implemented.<br/>
-
-                    Probably coming soon
-                </code>
+            <div class="bg-gray-900 p-2 rounded-md overflow-y-scroll h-64 logs-container" id="logs-container">
+                <code class="text-xs" id="logs"></code>
             </div>
         </div>
     </div>
@@ -85,6 +81,26 @@
         </ul>
     </div>
 </div>
+<script type="text/javascript" src="//code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.3/socket.io.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+
+<script>
+    const container_id = "{{container_id}}"
+    $(document).ready(function(){
+            var socket = io.connect();
+
+            socket.on('connect', function() {
+                socket.emit('i_want_logs', {container_id: container_id, 'cookie': Cookies.get('sessionid')});
+            });
+            socket.on('logs', function(msg) {
+                //console.log("crazy shit", msg)
+                const logsElement = document.getElementById('logs')
+                logsElement.innerText = logsElement.innerText + msg.line
+                document.getElementById("logs-container").scrollTo(0, document.getElementById("logs-container").scrollHeight)
+            });
+    })
+</script>
 {% endblock %}
 
 

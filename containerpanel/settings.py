@@ -31,7 +31,6 @@ if os.environ.get('DEBUG'):
 else:
     DEBUG = True
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -55,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'mozilla_django_oidc.middleware.SessionRefresh',
 ]
 
 ROOT_URLCONF = 'containerpanel.urls'
@@ -110,6 +110,8 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend'
 )
 
+LOGIN_REDIRECT_URL = ""
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -135,6 +137,7 @@ OIDC_RP_SIGN_ALGO = os.environ["OIDC_RP_SIGN_ALGO"]
 OIDC_OP_JWKS_ENDPOINT = os.environ["OIDC_OP_JWKS_ENDPOINT"]
 OIDC_PROFILE_URL = os.environ["OIDC_PROFILE_URL"]
 
+LOGIN_URL = "/login"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
@@ -143,13 +146,13 @@ OIDC_RP_CLIENT_SECRET = os.environ['OIDC_RP_CLIENT_SECRET']
 
 TAILWIND_APP_NAME = 'theme'
 
-
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
+    str(BASE_DIR / "static"),
 ]
 
 STATIC_ROOT = "./static-dist"
+SESSION_COOKIE_HTTPONLY = False
