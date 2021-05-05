@@ -13,7 +13,7 @@ from .helpers import can_manage_container
 from django.conf import settings
 import socketio
 from datetime import datetime
-sio = socketio.Server()
+sio = socketio.Server(cors_allowed_origins=settings.ALLOWED_HOSTS)
 
 
 def login(request):
