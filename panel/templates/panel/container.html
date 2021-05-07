@@ -98,8 +98,15 @@
                 const logsElement = document.getElementById('logs')
                 logsElement.innerText = logsElement.innerText + msg.line
                 document.getElementById("logs-container").scrollTo(0, document.getElementById("logs-container").scrollHeight)
+                if (logsElement.innerHTML.split("<br>").length > 100) {
+                  const content = logsElement.innerHTML.split("<br>")
+                  content.shift()
+                  logsElement.innerHTML = content.join("<br>")
+                }
+
             });
     })
+
 </script>
 {% endblock %}
 
