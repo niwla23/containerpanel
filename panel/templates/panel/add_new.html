@@ -1,0 +1,15 @@
+{% extends 'panel/base.html' %}
+{% block content %}
+<div class="bg-gray-900 m-4 md:m-32 md:mt-8 p-4 rounded-md flex-grow">
+    <span style="display: none" class="pl-2 bg-gray-800 rounded-md w-full mb-2"></span>
+    <form action="{% url 'add_new' %}" method="post" class="">
+        {% csrf_token %}
+        {{ form }}
+        <input class="bg-blue-600 p-1 rounded-md pr-2 pl-2 cursor-pointer" type="submit"
+               value="Create">
+
+
+    </form>
+</div>
+{% endblock %}
+

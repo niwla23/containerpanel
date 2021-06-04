@@ -1,0 +1,14 @@
+name: "Minecraft Airplane"
+command_prefix: "rcon-cli"
+config:
+    name: Minecraft Airplane
+    image: itzg/minecraft-server:java11
+    env:
+      EULA: "true"
+      TYPE: AIRPLANE
+      VERSION: LATEST
+      FORCE_REDOWNLOAD: 0
+    volumes:
+      - ./data:/data
+    ports:
+      - <port>:25565

@@ -1,0 +1,12 @@
+services:
+  main:
+    environment:
+    - TEST=123
+    - XD=LOL
+    image: test
+    ports:
+    - 5555:5555
+    restart: always
+    volumes:
+    - ./data:/data
+version: '3'

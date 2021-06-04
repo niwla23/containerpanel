@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 {% load tailwind_tags %}
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
     <meta charset="UTF-8">
 
@@ -13,20 +13,21 @@
     <link rel="stylesheet" href="{% static 'theme/css/dist/styles.css' %}">
 
 </head>
-<body class="bg-gray-900 text-white">
-{% if user.is_authenticated %}
-<div class="bg-gray-800 w-full flex flex-row p-4">
-    <div class="w-16">
-        <a href="{% url 'index' %}">
-            <img src="/static/panel/img/logo.svg"/>
-        </a>
+<body class="bg-gray-900 text-white h-full">
+<div class="flex flex-col h-full">
+    <div class="bg-gray-800 w-full flex flex-row p-4">
+        <div class="w-16">
+            <a href="{% url 'index' %}">
+                <img src="/static/panel/img/logo.svg"/>
+            </a>
+        </div>
+        <div class="flex-grow"></div>
+        <div class="text-white pr-4"><a href="{% url 'add_choose' %}">+</a></div>
+        <div class="text-white"><a href="{{profile_url}}">{{user}}</a></div>
     </div>
-    <div class="flex-grow"></div>
-    <div class="text-white"><a href="{{profile_url}}">{{user}}</a></div>
+    {% block content %}
+    {% endblock %}
 </div>
-{% endif %}
-{% block content %}
-{% endblock %}
 <script src="https://kit.fontawesome.com/99c8b9bf39.js" crossorigin="anonymous"></script>
 
 </body>

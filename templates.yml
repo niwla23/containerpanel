@@ -1,0 +1,13 @@
+templates:
+  mc_airplane:
+    name: Minecraft Airplane
+    image: itzg/minecraft-server
+    env:
+      EULA: "true"
+      TYPE: AIRPLANE
+      VERSION: LATEST
+      FORCE_REDOWNLOAD: 0
+    volumes:
+      - ./data:/data
+    ports:
+      - <port>:25565

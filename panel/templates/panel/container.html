@@ -5,81 +5,126 @@
 <div class="m-4 md:m-32 md:mt-8 space-y-4">
     <h1 class="text-xl">{{description}}</h1>
     <div class="md:flex md:flex-row md:w-full md:space-x-4 space-y-4 md:space-y-0">
-        <div class="bg-gray-800 p-4 rounded-md w-full md:w-64">
-            <h2 class="text-lg">Control</h2>
+        <div class="h-full space-y-4 flex flex-col">
+            <div class="bg-gray-800 p-4 rounded-md w-full md:w-64">
+                <h2 class="text-lg">Control</h2>
 
-            {% if state == 'running' %}
-            <p class="text-green-400 pb-1"><i class="fas fa-circle pr-1"></i>Running</p>
-            {% else %}
-            <p class="text-red-400 pb-1"><i class="fas fa-circle pr-1"></i>Stopped</p>
-            {% endif %}
-
-            <div class="flex flex-row space-x-1">
                 {% if state == 'running' %}
-                <form action="{% url 'power_action' container_id %}" method="post">
-                    {% csrf_token %}
-                    <input name="action" value="stop" style="display: none">
-                    <input class="bg-red-700 p-1 rounded-md text-sm pr-2 pl-2 cursor-pointer" type="submit"
-                           value="Stop">
-                </form>
-                <form action="{% url 'power_action' container_id %}" method="post">
-                    {% csrf_token %}
-                    <input name="action" value="restart" style="display: none">
-                    <input class="bg-red-700 p-1 rounded-md text-sm pr-2 pl-2 cursor-pointer" type="submit"
-                           value="Restart">
-                </form>
-                <form action="{% url 'power_action' container_id %}" method="post">
-                    {% csrf_token %}
-                    <input name="action" value="kill" style="display: none">
-                    <input class="bg-red-700 p-1 rounded-md text-sm pr-2 pl-2 cursor-pointer" type="submit"
-                           value="Kill">
-                </form>
+                <p class="text-green-400 pb-1"><i class="fas fa-circle pr-1"></i>Running</p>
                 {% else %}
-                <form action="{% url 'power_action' container_id %}" method="post">
-                    {% csrf_token %}
-                    <input name="action" value="start" style="display: none">
-                    <input class="bg-green-700 p-1 rounded-md text-sm pr-2 pl-2 cursor-pointer" type="submit"
-                           value="Start">
-                </form>
+                <p class="text-red-400 pb-1"><i class="fas fa-circle pr-1"></i>Stopped</p>
                 {% endif %}
+
+                <div class="flex flex-row space-x-1">
+                    {% if state == 'running' %}
+                    <form action="{% url 'power_action' container_id %}" method="post">
+                        {% csrf_token %}
+                        <input name="action" value="stop" style="display: none">
+                        <input class="bg-red-700 p-1 rounded-md text-sm pr-2 pl-2 cursor-pointer" type="submit"
+                               value="Stop">
+                    </form>
+                    <form action="{% url 'power_action' container_id %}" method="post">
+                        {% csrf_token %}
+                        <input name="action" value="restart" style="display: none">
+                        <input class="bg-red-700 p-1 rounded-md text-sm pr-2 pl-2 cursor-pointer" type="submit"
+                               value="Restart">
+                    </form>
+                    <form action="{% url 'power_action' container_id %}" method="post">
+                        {% csrf_token %}
+                        <input name="action" value="kill" style="display: none">
+                        <input class="bg-red-700 p-1 rounded-md text-sm pr-2 pl-2 cursor-pointer" type="submit"
+                               value="Kill">
+                    </form>
+                    {% else %}
+                    <form action="{% url 'power_action' container_id %}" method="post">
+                        {% csrf_token %}
+                        <input name="action" value="start" style="display: none">
+                        <input class="bg-green-700 p-1 rounded-md text-sm pr-2 pl-2 cursor-pointer" type="submit"
+                               value="Start">
+                    </form>
+                    {% endif %}
+                </div>
+                <h2 class="text-lg pt-4">Info</h2>
+                <div class="text-gray-400">
+                    <table>
+                        <tbody>
+                        <tr>
+                            <td><i class="fas fa-network-wired"></i></td>
+                            <td class="pl-1">1234</td>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-microchip"></i></td>
+                            <td class="pl-1">{{cpu}}%</td>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-memory"></i></td>
+                            <td class="pl-1">{{memory}}GB</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <h2 class="text-lg pt-4">Info</h2>
-            <div class="text-gray-400">
-                <table>
-                    <tbody>
-                    <tr>
-                        <td><i class="fas fa-network-wired"></i></td>
-                        <td class="pl-1">1234</td>
-                    </tr>
-                    <tr>
-                        <td><i class="fas fa-microchip"></i></td>
-                        <td class="pl-1">{{cpu}}%</td>
-                    </tr>
-                    <tr>
-                        <td><i class="fas fa-memory"></i></td>
-                        <td class="pl-1">{{memory}}GB</td>
-                    </tr>
-                    </tbody>
-                </table>
+            <div class="bg-gray-800 p-4 rounded-md flex-grow">
+                <h2 class="text-lg">User Access</h2>
+                <ul class="text-gray-400 list-disc pl-4">
+                    {% for user in allowed_users %}
+                    <li>{{user.first_name}} {{user.last_name}}</li>
+                    {% endfor %}
+                </ul>
             </div>
 
+        </div>
+
+        <div class="flex-grow space-y-4">
+            <div class="bg-gray-800 p-4 rounded-md ">
+                <h2 class="text-lg">Console</h2>
+                <div class="bg-gray-900 p-2 rounded-md logs-container h-96 flex flex-col" style="height: 40rem" id="logs-container">
+                    <code class="text-xs text-gray-300 flex-grow overflow-y-scroll " id="logs">
+                        {% for line in logs %}
+                        {{ line }}
+                        <br>
+                        {% endfor %}
+                    </code>
+                    <div class="flex flex-row pt-2">
+                        <span class="text-yellow-500 pr-1 text-bold">></span>
+                        <input id="command-box" placeholder="Type a command..." class="w-full text-gray-100 bg-gray-900"/>
+                    </div>
+                </div>
+            </div>
 
         </div>
-        <div class="bg-gray-800 p-4 rounded-md flex-grow ">
-            <h2 class="text-lg">Console</h2>
-            <div class="bg-gray-900 p-2 rounded-md overflow-y-scroll h-64 logs-container" id="logs-container">
-                <code class="text-xs" id="logs"></code>
-            </div>
-        </div>
+
     </div>
-    <div class="bg-gray-800 p-4 rounded-md">
-        <h2 class="text-lg">User Access</h2>
-        <ul class="text-gray-400 list-disc pl-4">
-            {% for user in allowed_users %}
-            <li>{{user.first_name}} {{user.last_name}}</li>
-            {% endfor %}
-        </ul>
-    </div>
+
+    <style>
+/* width */
+::-webkit-scrollbar {
+  width: 20px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey;
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: red;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #b30000;
+}
+
+* {
+  scrollbar-width: thin;          /* "auto" or "thin" */
+  scrollbar-color: #1f2937 #111827;   /* scroll thumb and track */
+}
+</style>
+
 </div>
 <script type="text/javascript" src="//code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.3/socket.io.min.js"></script>
@@ -88,6 +133,7 @@
 <script>
     const container_id = "{{container_id}}"
     $(document).ready(function(){
+            document.getElementById("logs").scrollTo(0, document.getElementById("logs").scrollHeight)
             var socket = io.connect();
 
             socket.on('connect', function() {
@@ -97,7 +143,7 @@
                 //console.log("crazy shit", msg)
                 const logsElement = document.getElementById('logs')
                 logsElement.innerText = logsElement.innerText + msg.line
-                document.getElementById("logs-container").scrollTo(0, document.getElementById("logs-container").scrollHeight)
+                document.getElementById("logs").scrollTo(0, document.getElementById("logs").scrollHeight)
                 if (logsElement.innerHTML.split("<br>").length > 100) {
                   const content = logsElement.innerHTML.split("<br>")
                   content.shift()
@@ -105,7 +151,18 @@
                 }
 
             });
+
+            $("#command-box").keydown(function(event) {
+                if (event.keyCode === 13) {
+                    const command = document.getElementById("command-box").value
+                    if (command) {
+                        socket.emit('command', {container_id: container_id, 'cookie': Cookies.get('sessionid'), command: command});
+                    }
+                }
+            });
+
     })
+
 
 </script>
 {% endblock %}
