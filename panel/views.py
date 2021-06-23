@@ -1,4 +1,5 @@
 import os
+import random
 import uuid
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -110,6 +111,7 @@ def add_new(request):
                 print(user)
                 new_container.allowed_users.add(user)
             new_container.save()
+            return redirect("container", new_container.container_id)
 
     return render(request, 'panel/add_new.html', {"form": form})
 
@@ -124,7 +126,7 @@ def template_add(request, template_name):
         "image": config["image"],
         "env": format_env(config["env"]),
         "volumes": ";".join(config["volumes"]),
-        "ports": ";".join(config["ports"]),
+        "ports": ";".join(config["ports"]).replace("<port>", str(random.randint(11111, 99999))),
         "command_prefix": template["command_prefix"]
     })
 
@@ -161,7 +163,7 @@ def container(request, container_id):
 
         # logs
         since_date = datetime.now() - timedelta(minutes=15)
-        data["logs"] = current_container.logs(follow=False, since=since_date, stream=False).decode().split("\n")
+        data["logs"] = current_container.logs(follow=False, since=since_date, stream=False).decode().split("\n")[:5000]
         return render(request, 'panel/container.html', data)
     else:
         return redirect("index")

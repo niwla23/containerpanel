@@ -9,3 +9,9 @@ class Container(models.Model):
     name = models.CharField(max_length=200)
     command_prefix = models.CharField(max_length=400)
     allowed_users = models.ManyToManyField(User, verbose_name="Users allowed to manage this container")
+
+    def __repr__(self):
+        return self.description
+
+    def __str__(self):
+        return self.description
