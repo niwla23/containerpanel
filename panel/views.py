@@ -126,7 +126,7 @@ def template_add(request, template_name):
         "image": config["image"],
         "env": format_env(config["env"]),
         "volumes": ";".join(config["volumes"]),
-        "ports": ";".join(config["ports"]).replace("<port>", str(random.randint(11111, 99999))),
+        "ports": ";".join(config["ports"]).replace("<port>", str(random.randint(11111, 65534))),
         "command_prefix": template["command_prefix"]
     })
 
@@ -163,7 +163,7 @@ def container(request, container_id):
 
         # logs
         since_date = datetime.now() - timedelta(minutes=15)
-        data["logs"] = current_container.logs(follow=False, since=since_date, stream=False).decode().split("\n")[:5000]
+        data["logs"] = current_container.logs(follow=False, since=since_date, stream=False).decode().split("\n")[:500]
         return render(request, 'panel/container.html', data)
     else:
         return redirect("index")
