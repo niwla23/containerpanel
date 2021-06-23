@@ -1,0 +1,13 @@
+name: "Minecraft Vanilla"
+command_prefix: "rcon-cli"
+config:
+    name: Minecraft Vanilla
+    image: itzg/minecraft-server:java16
+    env:
+      EULA: "true"
+      VERSION: LATEST
+    volumes:
+      - ./data:/data
+    ports:
+      - <port>:25565
+

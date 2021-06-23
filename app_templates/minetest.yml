@@ -1,0 +1,14 @@
+name: "Minetest"
+command_prefix: ""
+config:
+    name: "Mintest"
+    image: ghcr.io/linuxserver/minetest
+    env:
+      PUID: 1000
+      PGID: 1000
+      TZ: Europe/London
+    volumes:
+      - ./data:/config/.minetest
+    ports:
+      - <port>:30000/udp
+    restart: unless-stopped

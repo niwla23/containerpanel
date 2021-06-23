@@ -1,0 +1,15 @@
+name: "Minecraft Forge"
+command_prefix: "rcon-cli"
+config:
+    name: Minecraft Forge
+    image: itzg/minecraft-server:java16
+    env:
+      EULA: "true"
+      TYPE: FORGE
+      VERSION: LATEST
+      FORGEVERSION: LATEST
+      FORCE_REDOWNLOAD: 0
+    volumes:
+      - ./data:/data
+    ports:
+      - <port>:25565
