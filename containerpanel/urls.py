@@ -15,9 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from graphene_django.views import GraphQLView
 
 urlpatterns = [
-    path('', include('panel.urls')),
-    path('oidc/', include('mozilla_django_oidc.urls')),
-    path('admin/', admin.site.urls)
+    path('api/', include('api.urls')),
+    path('api/oidc/', include('mozilla_django_oidc.urls')),
+    path('admin/', admin.site.urls),
+    path("api/graphql", GraphQLView.as_view(graphiql=True)),
 ]

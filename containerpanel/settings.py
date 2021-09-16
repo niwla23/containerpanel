@@ -28,7 +28,9 @@ if os.environ.get('DEBUG'):
     DEBUG = os.environ.get('DEBUG') == 'True'
     ALLOWED_HOSTS = os.environ["ALLOWED_HOSTS"].split(",")
 else:
-    DEBUG = True
+    DEBUG = False
+
+print(ALLOWED_HOSTS)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = secrets.token_hex(32) if DEBUG else "fdsfdsafdsfdafdsafasf"
@@ -43,16 +45,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'panel',
-    'tailwind',
-    'theme'
+    "corsheaders",
+    'api',
+    "channels",
+    "graphql_ws.django",
+    "graphene_django",
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -60,6 +64,13 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'containerpanel.urls'
+
+
+CORS_ALLOW_ALL_ORIGINS = DEBUG
+CSRF_TRUSTED_ORIGINS = [
+    "localhost:3000",
+]
+
 
 TEMPLATES = [
     {
@@ -78,6 +89,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'containerpanel.wsgi.application'
+ASGI_APPLICATION = 'graphql_ws.django.routing.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
@@ -112,7 +124,6 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend'
 )
 
-LOGIN_REDIRECT_URL = ""
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
@@ -132,6 +143,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+BASE_URL = "http://localhost:3000"
+
 OIDC_OP_AUTHORIZATION_ENDPOINT = os.environ["OIDC_OP_AUTHORIZATION_ENDPOINT"]
 OIDC_OP_TOKEN_ENDPOINT = os.environ["OIDC_OP_TOKEN_ENDPOINT"]
 OIDC_OP_USER_ENDPOINT = os.environ["OIDC_OP_USER_ENDPOINT"]
@@ -140,7 +153,7 @@ OIDC_OP_JWKS_ENDPOINT = os.environ["OIDC_OP_JWKS_ENDPOINT"]
 OIDC_PROFILE_URL = os.environ["OIDC_PROFILE_URL"]
 
 LOGIN_URL = "/login"
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "http://127.0.0.1:3000"
 LOGOUT_REDIRECT_URL = "/"
 
 OIDC_RP_CLIENT_ID = os.environ['OIDC_RP_CLIENT_ID']
@@ -151,6 +164,10 @@ TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+
+GRAPHENE = {
+    "SCHEMA": "api.schema.schema"
+}
 
 STATICFILES_DIRS = [
     str(BASE_DIR / "static"),

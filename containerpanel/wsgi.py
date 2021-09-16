@@ -11,7 +11,7 @@ import os
 import socketio
 
 from django.core.wsgi import get_wsgi_application
-from panel.views import sio
+from api.views import sio
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'containerpanel.settings')
 

@@ -1,4 +1,5 @@
 name: "Minecraft Airplane"
+description: "A stable, optimized, well supported Paper fork."
 command_prefix: "rcon-cli"
 config:
     name: Minecraft Airplane

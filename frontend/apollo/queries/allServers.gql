@@ -1,0 +1,18 @@
+query server {
+  allServers {
+    serverId
+    name
+    description
+    allowedUsers {
+      firstName
+      lastName
+      id
+    }
+    port
+    state {
+      running
+      cpuUsage
+      memoryUsage
+    }
+  }
+}

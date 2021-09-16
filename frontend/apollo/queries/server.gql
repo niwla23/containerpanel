@@ -1,0 +1,18 @@
+query server($serverId: String!) {
+  server(serverId: $serverId) {
+    serverId
+    name
+    description
+    allowedUsers {
+      firstName
+      lastName
+      id
+    }
+    state {
+      running
+      cpuUsage
+      memoryUsage
+    }
+	port
+  }
+}

@@ -1,0 +1,35 @@
+version: "2"
+name: "Minetest"
+description: "an open source voxel game engine with easy modding and game creation"
+command_prefix: ""
+commands_supported: false
+
+compose_config:
+  version: '3'
+  services:
+    main:
+      image: ghcr.io/linuxserver/minetest
+      env:
+        PUID: 1000
+        PGID: 1000
+        TZ: Europe/London
+      volumes:
+        - ./data:/config/.minetest
+      ports:
+        - "{{port}}:30000/udp"
+
+      restart: unless-stopped
+      deploy:
+        resources:
+          limits:
+            cpus: '{{max_cpu_usage}}'
+            memory: '{{max_memory_usage}}M'
+    sftp:
+      image: atmoz/sftp
+      ports:
+        - "{{sftp_port}}:22"
+      command: root:{{sftp_password}}:1000
+      volumes:
+        - ./data:/home/finn/upload
+
+

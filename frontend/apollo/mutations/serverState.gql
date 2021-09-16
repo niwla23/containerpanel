@@ -1,0 +1,9 @@
+mutation serverState($serverId: ID!, $action: String!) {
+  serverState(serverId: $serverId, action: $action) {
+    server {
+      state {
+        running
+      }
+    }
+  }
+}
