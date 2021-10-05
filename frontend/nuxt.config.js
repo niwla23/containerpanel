@@ -61,14 +61,14 @@ export default {
   apollo: {
     clientConfigs: {
       default: {
-        httpEndpoint: 'http://127.0.0.1:3000/api/graphql',
+        httpEndpoint: '/api/graphql',
       }
     }
   },
 
-  proxy: {
-    '/api': 'http://127.0.0.1:8000'
-  },
+  // proxy: {
+  //   '/api': 'http://127.0.0.1:8000'
+  // },
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {

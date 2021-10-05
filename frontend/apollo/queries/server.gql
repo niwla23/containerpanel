@@ -14,5 +14,7 @@ query server($serverId: String!) {
       memoryUsage
     }
 	port
+  sftpPort
+  logs
   }
 }

@@ -1,3 +1,4 @@
+import asyncio
 import base64
 import secrets
 
@@ -5,6 +6,7 @@ import graphene
 import os
 
 import yaml
+from asgiref.sync import sync_to_async
 
 from api.models import Server
 from graphene_django import DjangoObjectType
@@ -19,6 +21,7 @@ class ServerStateType(graphene.ObjectType):
 
 class ServerType(DjangoObjectType):
     state = graphene.Field(ServerStateType)
+    logs = graphene.List(graphene.String)
 
     def resolve_state(self, info):
         server = Server.objects.get(pk=self.server_id)
@@ -29,9 +32,13 @@ class ServerType(DjangoObjectType):
             "memory_usage": memory_usage
         }
 
+    def resolve_logs(self, info):
+        server = Server.objects.get(pk=self.server_id)
+        return server.get_logs(50)
+
     class Meta:
         model = Server
-        fields = ("server_id", "description", "name", "command_prefix", "allowed_users", "port")
+        fields = ("server_id", "description", "name", "command_prefix", "allowed_users", "port", "sftp_port")
 
 
 class TemplateType(graphene.ObjectType):
@@ -40,15 +47,10 @@ class TemplateType(graphene.ObjectType):
     description = graphene.String()
 
 
-# class Subscription(graphene.ObjectType):
-#     server = graphene.Field(ServerType, server_id=graphene.String())
-#
-#     async def resolve_server(self, info, server_id):
-#         while True:
-#             await asyncio.sleep(1)
-#             data = await get_server(server_id)
-#             yield data
-#
+@sync_to_async
+def get_server_async(server_id: str):
+    return Server.objects.get(pk=server_id)
+
 
 class UserType(DjangoObjectType):
     class Meta:
@@ -71,6 +73,22 @@ class ServerStateMutation(graphene.Mutation):
         return ServerStateMutation(server=server)
 
 
+class ExecCommandMutation(graphene.Mutation):
+    class Arguments:
+        server_id = graphene.ID()
+        command = graphene.String()
+
+    # The class attributes define the response of the mutation
+    response = graphene.String()
+    code = graphene.Int()
+
+    @classmethod
+    def mutate(cls, root, info, server_id, command):
+        server = Server.objects.get(pk=server_id)
+        code, output = server.exec_command(command)
+        return ExecCommandMutation(response=output, code=code)
+
+
 class CreateServerMutation(graphene.Mutation):
     class Arguments:
         name = graphene.String()
@@ -84,7 +102,8 @@ class CreateServerMutation(graphene.Mutation):
     server = graphene.Field(ServerType)
 
     @classmethod
-    def mutate(cls, root, info, name: str, description: str, template: str, options: dict, port: int, sftp_port: int, allowed_users: list):
+    def mutate(cls, root, info, name: str, description: str, template: str, options: dict, port: int, sftp_port: int,
+               allowed_users: list):
         server = Server()
         server.name = name
         server.description = description
@@ -104,6 +123,7 @@ class CreateServerMutation(graphene.Mutation):
 class Mutation(graphene.ObjectType):
     server_state = ServerStateMutation.Field()
     create_server = CreateServerMutation.Field()
+    exec_command = ExecCommandMutation.Field()
 
 
 class Query(graphene.ObjectType):

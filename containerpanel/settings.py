@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 import os
 import secrets
+import dotenv
+
+dotenv.load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,17 +43,24 @@ SECRET_KEY = secrets.token_hex(32) if DEBUG else "fdsfdsafdsfdafdsafasf"
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
-    'mozilla_django_oidc',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "corsheaders",
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.keycloak',
     'api',
     "channels",
     "graphql_ws.django",
     "graphene_django",
+    'django.contrib.sites',
+
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -62,6 +72,19 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'mozilla_django_oidc.middleware.SessionRefresh',
 ]
+
+SOCIALACCOUNT_PROVIDERS = {
+    'keycloak': {
+        'KEYCLOAK_URL': os.environ["OIDC_URL"],
+        'KEYCLOAK_REALM': os.environ["OIDC_REALM"],
+        'APP': {
+            "client_id": os.environ["OIDC_CLIENT_ID"],
+            "secret": os.environ["OIDC_CLIENT_SECRET"],
+            "key": ""
+        }
+    }
+}
+
 
 ROOT_URLCONF = 'containerpanel.urls'
 
@@ -119,11 +142,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTHENTICATION_BACKENDS = (
-    'containerpanel.oidc_backend.MyOIDCAB',
-    'django.contrib.auth.backends.ModelBackend'
-)
-
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend'
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
@@ -145,19 +167,10 @@ STATIC_URL = '/static/'
 
 BASE_URL = "http://localhost:3000"
 
-OIDC_OP_AUTHORIZATION_ENDPOINT = os.environ["OIDC_OP_AUTHORIZATION_ENDPOINT"]
-OIDC_OP_TOKEN_ENDPOINT = os.environ["OIDC_OP_TOKEN_ENDPOINT"]
-OIDC_OP_USER_ENDPOINT = os.environ["OIDC_OP_USER_ENDPOINT"]
-OIDC_RP_SIGN_ALGO = os.environ["OIDC_RP_SIGN_ALGO"]
-OIDC_OP_JWKS_ENDPOINT = os.environ["OIDC_OP_JWKS_ENDPOINT"]
-OIDC_PROFILE_URL = os.environ["OIDC_PROFILE_URL"]
-
-LOGIN_URL = "/login"
-LOGIN_REDIRECT_URL = "http://127.0.0.1:3000"
+LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
+ACCOUNT_EMAIL_VERIFICATION = "none"
 
-OIDC_RP_CLIENT_ID = os.environ['OIDC_RP_CLIENT_ID']
-OIDC_RP_CLIENT_SECRET = os.environ['OIDC_RP_CLIENT_SECRET']
 
 TAILWIND_APP_NAME = 'theme'
 

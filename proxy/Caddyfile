@@ -1,4 +1,5 @@
-localhost:3001 {
+alwin.sweet {
+  tls internal
   route /api/* {
     reverse_proxy 127.0.0.1:8000
   }

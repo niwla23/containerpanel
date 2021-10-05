@@ -19,7 +19,7 @@ from graphene_django.views import GraphQLView
 
 urlpatterns = [
     path('api/', include('api.urls')),
-    path('api/oidc/', include('mozilla_django_oidc.urls')),
+    path('api/oidc/', include('allauth.urls')),
     path('admin/', admin.site.urls),
     path("api/graphql", GraphQLView.as_view(graphiql=True)),
 ]

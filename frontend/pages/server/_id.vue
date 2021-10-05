@@ -102,9 +102,17 @@
                   </tr>
                   <tr>
                     <td>
+                      <fa icon="save" class="mr-1" />
+                    </td>
+                    <td class="pl-1">{{ server.sftpPort }}</td>
+                  </tr>
+                  <tr>
+                    <td>
                       <fa icon="microchip" class="mr-1" />
                     </td>
-                    <td class="pl-1">{{ server.state.cpuUsage }}%</td>
+                    <td class="pl-1">
+                      {{ server.state.cpuUsage.toFixed(2) }}%
+                    </td>
                   </tr>
                   <tr>
                     <td>
@@ -114,12 +122,6 @@
                       {{ bytesToString(server.state.memoryUsage) }}
                     </td>
                   </tr>
-                  <tr>
-                    <td>
-                      <fa icon="save" class="mr-1" />
-                    </td>
-                    <td class="pl-1">{{ (disk_usage / 1000).toFixed(2) }}GB</td>
-                  </tr>
                 </tbody>
               </table>
             </div>
@@ -127,7 +129,9 @@
           <div class="bg-gray-800 p-4 rounded-md flex-grow">
             <h2 class="text-lg">User Access</h2>
             <ul class="text-gray-400 list-disc pl-4">
-              <li v-for="user in allowed_users" :key="user">{{ user }}</li>
+              <li v-for="user in server.allowed_users" :key="user">
+                {{ user }}
+              </li>
             </ul>
           </div>
         </div>
@@ -149,8 +153,14 @@
               <code
                 class="text-xs text-gray-300 flex-grow overflow-y-scroll"
                 id="logs"
+                ref="logs"
               >
                 <br />
+                <transition-group name="logs" tag="ul">
+                  <li v-for="line in server.logs" :key="line">
+                    {{ line.split(' ').slice(1).join(' ') }}
+                  </li>
+                </transition-group>
               </code>
               <div class="flex flex-row pt-2">
                 <span class="text-yellow-500 pr-1 text-bold"
@@ -181,11 +191,6 @@ export default Vue.extend({
   components: { PingDot },
   data: () => {
     return {
-      up: true,
-      cpu_usage: 233.6,
-      memory_usage: 4030.5,
-      disk_usage: 2400,
-      allowed_users: ['Alwin Lohrie', 'Admin', 'Max Mustermann'],
       serverStateMutation: serverStateMutation,
       updatingState: false,
     }
@@ -195,10 +200,16 @@ export default Vue.extend({
     updateState: function (action: 'start' | 'stop' | 'restart' | 'kill') {
       this.updatingState = true
       console.log(this.$route)
-      this.$apollo.mutate({
-        mutation: serverStateMutation,
-        variables: { serverId: this.serverId, action: action },
-      })
+      this.$apollo
+        .mutate({
+          mutation: serverStateMutation,
+          variables: { serverId: this.serverId, action: action },
+        })
+        .then(() => {
+          if (action === 'restart') {
+            this.updatingState = false
+          }
+        })
     },
   },
   watch: {
@@ -207,20 +218,27 @@ export default Vue.extend({
         if (newServer.state.running != oldServer.state.running) {
           this.updatingState = false
         }
+        if (newServer.logs != oldServer.logs) {
+          if (this.$refs.logs) {
+            let scrollHeight = this.$refs.logs.scrollHeight
+            this.$refs.logs.scrollTop = scrollHeight
+            this.$refs.logs.scrollBy(0, 100)
+          }
+        }
       }
     },
   },
   computed: {
-    serverId: function() {
+    serverId: function () {
       return this.$route.params.id
-    }
+    },
   },
 
   apollo: {
     server: {
       prefetch: true,
       query: serverQuery,
-      variables () {
+      variables() {
         return {
           serverId: this.serverId,
         }
@@ -230,3 +248,20 @@ export default Vue.extend({
   },
 })
 </script>
+
+
+<style scoped>
+.logs-enter-active,
+.logs-leave-active {
+  transition: all 1s;
+}
+.logs-enter {
+  opacity: 0;
+  transform: translateY(-15);
+}
+
+.logs-leave-to {
+  opacity: 0;
+  transform: translateY(-15);
+}
+</style>

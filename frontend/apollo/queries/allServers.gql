@@ -9,6 +9,7 @@ query server {
       id
     }
     port
+    sftpPort
     state {
       running
       cpuUsage

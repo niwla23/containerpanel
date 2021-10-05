@@ -1,5 +1,6 @@
 import os
 import subprocess
+from datetime import datetime
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -101,6 +102,16 @@ class Server(models.Model):
 
             return cpu_usage, memory_usage
         return 0, 0
+
+    def get_logs(self, lines):
+        self.load_container()
+        logs = self.container.logs(tail=lines, timestamps=True).decode().split("\n")
+        return logs
+
+    def exec_command(self, command: str):
+        self.load_container()
+        result = self.container.exec_run(str(self.command_prefix) + " " + command)
+        return result.exit_code, result.output.decode()
 
     def __repr__(self):
         return self.description

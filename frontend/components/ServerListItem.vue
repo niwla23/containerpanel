@@ -45,7 +45,7 @@
                 </p>
                 <p class="text-gray-200">
                   <fa icon="save" class="mr-2" />
-                  {{ disk_usage.toFixed(2) }}GB
+                  {{ sftpPort }}
                 </p>
               </figure>
             </div>
@@ -66,7 +66,7 @@ export default Vue.extend({
     cpu: Number,
     memory: String,
     port: Number,
-    disk_usage: Number,
+    sftpPort: Number,
     server_id: String,
   },
 })
