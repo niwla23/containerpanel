@@ -1,6 +1,7 @@
 import os
 import subprocess
 from datetime import datetime
+from typing import List, Tuple
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -8,9 +9,17 @@ import django.template
 import secrets
 import yaml
 import docker
+from django.conf import settings
+from docker.errors import NotFound
 
 
-def create_id():
+def create_id() -> str:
+    """creates an id to identify a server.
+
+    Returns:
+        str: 5 digit hex id
+    """
+
     return secrets.token_hex(5)
 
 
@@ -26,9 +35,11 @@ class Server(models.Model):
     sftp_password = models.CharField(max_length=64)
     max_cpu_usage = models.FloatField()
     max_memory_usage = models.FloatField()
+    host = models.CharField(default=settings.SERVER_DEFAULT_HOST, max_length=255)
 
     docker_client = None
     container = None
+    container_available = True
 
     def load_docker_client(self):
         if not self.docker_client:
@@ -38,7 +49,10 @@ class Server(models.Model):
         if not self.docker_client:
             self.load_docker_client()
         if not self.container:
-            self.container = self.docker_client.containers.get(self.name + "_main_1")
+            try:
+                self.container = self.docker_client.containers.get(str(self.name) + "_main_1")
+            except NotFound:
+                self.container_available = False
 
     def create(self):
         self.load_docker_client()
@@ -63,10 +77,10 @@ class Server(models.Model):
             compose_config = yaml.safe_dump(yaml.safe_load(template.render(context))["compose_config"], sort_keys=False)
 
             path = f"{os.environ['APP_DIR']}/{self.name}"
-            subprocess.call(["mkdir", "-p", path])
+            subprocess.Popen(["mkdir", "-p", path]).wait()
             with open(f"{os.environ['APP_DIR']}/{self.name}/docker-compose.yml", "w") as compose_file:
                 compose_file.write(compose_config)
-            subprocess.Popen(["docker-compose", "up", "-d"], cwd=path)
+            subprocess.Popen(["docker-compose", "up", "-d"], cwd=path, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).wait()
 
     def power_action(self, action: str):
         self.load_container()
@@ -86,14 +100,24 @@ class Server(models.Model):
     @property
     def running(self):
         self.load_container()
-        return self.container.status == "running"
+        if self.container_available:
+            return self.container.status == "running"
+        else:
+            return False
 
     @property
     def stats(self):
+        """Gets the cpu and memory usage of a server using docker api.
+
+        Returns:
+            int: cpu_usage
+            int: memory_usage
+
+        """
         self.load_container()
-        stats = self.container.stats(stream=False)
 
         if self.running:
+            stats = self.container.stats(stream=False)
             cpu_delta = stats['cpu_stats']['cpu_usage']['total_usage'] - stats['precpu_stats']['cpu_usage'][
                 'total_usage']
             system_cpu_delta = stats['cpu_stats']['system_cpu_usage'] - stats['precpu_stats']['system_cpu_usage']
@@ -103,12 +127,35 @@ class Server(models.Model):
             return cpu_usage, memory_usage
         return 0, 0
 
-    def get_logs(self, lines):
-        self.load_container()
-        logs = self.container.logs(tail=lines, timestamps=True).decode().split("\n")
-        return logs
+    def get_logs(self, lines: int) -> List[str]:
+        """Returns the last log lines as list of strings.
 
-    def exec_command(self, command: str):
+        Args:
+            lines (int): Number of lines to return
+
+        Returns:
+            list: List of log lines
+        """
+
+        self.load_container()
+        if self.container_available:
+            logs = self.container.logs(tail=lines, timestamps=True).decode().split("\n")
+            return logs
+        else:
+            return []
+
+    def exec_command(self, command: str) -> Tuple[int, str]:
+        """Executes a command on the server
+
+        Args:
+            command (str): The command to execute. It will be prefixed with the command_prefix defined by the template
+
+        Returns:
+            tuple: A tuple of the return code (int) and the output (str)
+
+        Raises:
+            docker.errors.NotFound: the container for this server could not be found
+        """
         self.load_container()
         result = self.container.exec_run(str(self.command_prefix) + " " + command)
         return result.exit_code, result.output.decode()

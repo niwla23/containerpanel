@@ -219,11 +219,13 @@ export default Vue.extend({
           this.updatingState = false
         }
         if (newServer.logs != oldServer.logs) {
-          if (this.$refs.logs) {
-            let scrollHeight = this.$refs.logs.scrollHeight
-            this.$refs.logs.scrollTop = scrollHeight
-            this.$refs.logs.scrollBy(0, 100)
-          }
+          setTimeout(() => {
+            if (this.$refs.logs) {
+              let scrollHeight = this.$refs.logs.scrollHeight
+              this.$refs.logs.scrollTop = scrollHeight
+              this.$refs.logs.scrollBy(0, 100)
+            }
+          }, 50)
         }
       }
     },

@@ -20,4 +20,4 @@ EXPOSE 8000
 
 RUN mkdir /var/www && mkdir /var/www/static && mkdir /usr/src/app/static
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+ENTRYPOINT ["docker-entrypoint.sh"]

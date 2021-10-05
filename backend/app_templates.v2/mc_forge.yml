@@ -1,0 +1,35 @@
+version: "2"
+name: "Minecraft Forge"
+description: "Minecraft Server with Forge modding api"
+command_prefix: "rcon-cli "
+commands_supported: true
+
+compose_config:
+  version: '3'
+  services:
+    main:
+      image: itzg/minecraft-server:java16
+      ports:
+        - "{{port}}:25565"
+      volumes:
+        - ./data:/data
+      environment:
+        EULA: 'true'
+        TYPE: FORGE
+        VERSION: "{{template_config.mc_version}}"
+        FORCE_REDOWNLOAD: "{{template_config.force_redownload}}"
+      restart: unless-stopped
+      deploy:
+        resources:
+          limits:
+            cpus: '{{max_cpu_usage}}'
+            memory: '{{max_memory_usage}}M'
+    sftp:
+      image: atmoz/sftp
+      ports:
+        - "{{sftp_port}}:22"
+      command: root:{{sftp_password}}:1000
+      volumes:
+        - ./data:/home/finn/upload
+
+

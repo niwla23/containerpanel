@@ -13,6 +13,7 @@
       :status_time="33345"
       :cpu="server.state.cpuUsage * 100"
       :memory="bytesToString(server.state.memoryUsage)"
+      :host="server.host"
       :port="server.port"
       :sftpPort="server.sftpPort"
     />

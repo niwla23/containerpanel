@@ -1,5 +1,6 @@
 import asyncio
 import base64
+import re
 import secrets
 
 import graphene
@@ -38,7 +39,7 @@ class ServerType(DjangoObjectType):
 
     class Meta:
         model = Server
-        fields = ("server_id", "description", "name", "command_prefix", "allowed_users", "port", "sftp_port")
+        fields = ("server_id", "description", "name", "command_prefix", "allowed_users", "port", "sftp_port", "host")
 
 
 class TemplateType(graphene.ObjectType):
@@ -59,11 +60,17 @@ class UserType(DjangoObjectType):
 
 
 class ServerStateMutation(graphene.Mutation):
+    """Mutates the state of a server.
+
+    The desired state is defined by the action argument.
+    action can be "start", "stop" or "restart".
+    After receiving a state mutation it will keep the request on hold until the server reached the desired state.
+    Once the state is correct, the selected fields of the server model are sent back.
+    """
     class Arguments:
         server_id = graphene.ID()
         action = graphene.String()
 
-    # The class attributes define the response of the mutation
     server = graphene.Field(ServerType)
 
     @classmethod
@@ -74,11 +81,16 @@ class ServerStateMutation(graphene.Mutation):
 
 
 class ExecCommandMutation(graphene.Mutation):
+    """ Executes a command on the Server.
+
+    This will only work if commands are enabled for the server.
+    Commands are simple strings that are executed in the docker container with
+    the command_prefix of the server prefixed.
+    """
     class Arguments:
         server_id = graphene.ID()
         command = graphene.String()
 
-    # The class attributes define the response of the mutation
     response = graphene.String()
     code = graphene.Int()
 
@@ -90,6 +102,18 @@ class ExecCommandMutation(graphene.Mutation):
 
 
 class CreateServerMutation(graphene.Mutation):
+    """Creates a new server.
+
+    Args:
+        name (str): Technical name of the container. This may only consist of lowercase letters, numbers and underscores
+        description (str): Human readable version of the container name.
+        template (str): Name of the template to use when creating this server.
+        options (list): List of special options for the template. Ex.: Server version
+        port (int): The port on which the game server listens (on host network)
+        sftp_port (int): The port for the SFTP server (on host network)
+        allowed_users (list): List of user ids allowed to manage the server
+
+    """
     class Arguments:
         name = graphene.String()
         description = graphene.String()
@@ -104,6 +128,16 @@ class CreateServerMutation(graphene.Mutation):
     @classmethod
     def mutate(cls, root, info, name: str, description: str, template: str, options: dict, port: int, sftp_port: int,
                allowed_users: list):
+
+        if port > 60000 or port < 1000:
+            raise ValueError("port number must be between 1000 and 60000")
+
+        if sftp_port > 60000 or sftp_port < 1000:
+            raise ValueError("port number must be between 1000 and 60000")
+
+        if not re.match("^[a-z0-9_]+$", name):
+            raise ValueError("server name may only contain lowercase letters, numbers and underscores")
+
         server = Server()
         server.name = name
         server.description = description

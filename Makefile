@@ -1,16 +1,19 @@
-test:
-	PYTHONPATH=src python3 -m unittest discover -s tests -p 'test_*.py'
-
 backend-dev:
 	systemctl start docker
-	python3 manage.py runserver
+	cd backend && python3 manage.py runserver
+
+backend-migrate:
+	cd backend && python3 manage.py makemigrations
+	cd backend && python3 manage.py migrate
 
 frontend-dev:
 	cd frontend && yarn dev
 
+proxy-dev:
+	cd proxy && caddy run Caddyfile
 
 backend-test:
-	python3 manage.py test
+	cd backend && python3 manage.py test -v 2
 
 frontend-test:
 	cd frontend && yarn test
@@ -20,5 +23,5 @@ test:
 	make frontend-test
 
 setup:
-	pip3 install -r requirements.txt
+	cd backend && pip3 install -r requirements.txt
 	cd frontend && yarn

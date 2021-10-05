@@ -13,6 +13,7 @@ query server($serverId: String!) {
       cpuUsage
       memoryUsage
     }
+  host
 	port
   sftpPort
   logs

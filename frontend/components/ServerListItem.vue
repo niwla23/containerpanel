@@ -22,10 +22,7 @@
                 <p>{{ name }}</p>
                 <ping-dot :up="up" class="block sm:hidden" />
               </h2>
-              <small
-                >{{ up ? 'Up' : 'Down' }} for
-                {{ (status_time / 60 / 60).toFixed(2) }} hours</small
-              >
+              <small class="text-gray-300">{{ host }}:{{ port }}</small>
             </div>
             <div class="flex flex-row space-x-2">
               <figure>
@@ -65,6 +62,7 @@ export default Vue.extend({
     up: Boolean,
     cpu: Number,
     memory: String,
+    host: String,
     port: Number,
     sftpPort: Number,
     server_id: String,
