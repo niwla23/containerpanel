@@ -57,7 +57,6 @@ INSTALLED_APPS = [
     "graphql_ws.django",
     "graphene_django",
     'django.contrib.sites',
-
 ]
 
 SITE_ID = 1
@@ -69,8 +68,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'mozilla_django_oidc.middleware.SessionRefresh',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware'
 ]
 
 SOCIALACCOUNT_PROVIDERS = {
