@@ -4,7 +4,7 @@ backend-dev:
 
 backend-migrate:
 	cd backend && venv/bin/python3 manage.py makemigrations
-	cd backend && venv/bin/python3 manage.py migrate
+	cd backend && sudo venv/bin/python3 manage.py migrate
 
 frontend-dev:
 	cd frontend && yarn dev

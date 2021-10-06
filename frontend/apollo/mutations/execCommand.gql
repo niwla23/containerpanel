@@ -1,9 +1,6 @@
 mutation serverState($serverId: ID!, $command: String!) {
   execCommand(serverId: $serverId, command: $command) {
-    server {
-      state {
-        running
-      }
-    }
+    code
+    response
   }
 }

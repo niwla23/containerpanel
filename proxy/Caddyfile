@@ -3,5 +3,18 @@ alwin.sweet {
   route /api/* {
     reverse_proxy 127.0.0.1:8000
   }
+  
+  route /admin/* {
+    reverse_proxy 127.0.0.1:8000
+  }
+
+  route /admin {
+    reverse_proxy 127.0.0.1:8000
+  }
+
+  route /static/* {
+    reverse_proxy 127.0.0.1:8000
+  }
+
   reverse_proxy 127.0.0.1:3000
 }

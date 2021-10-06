@@ -74,7 +74,11 @@ class Server(models.Model):
                 "max_memory_usage": self.max_memory_usage,
                 "template_config": template_config
             })
-            compose_config = yaml.safe_dump(yaml.safe_load(template.render(context))["compose_config"], sort_keys=False)
+
+            config = yaml.safe_load(template.render(context))
+            compose_config = yaml.safe_dump(config["compose_config"], sort_keys=False)
+
+            self.command_prefix = config["command_prefix"]
 
             path = f"{os.environ['APP_DIR']}/{self.name}"
             subprocess.Popen(["mkdir", "-p", path]).wait()
@@ -157,6 +161,7 @@ class Server(models.Model):
             docker.errors.NotFound: the container for this server could not be found
         """
         self.load_container()
+        print(self.command_prefix)
         result = self.container.exec_run(str(self.command_prefix) + " " + command)
         return result.exit_code, result.output.decode()
 

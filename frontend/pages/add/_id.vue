@@ -44,8 +44,20 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import createServerMutation from '~/apollo/mutations/createServer'
+import createServerMutation from '~/apollo/mutations/createServer.gql'
 import { createNameFromDescription } from '~/helpers'
+
+type CreateServerResponse = {
+  data: {
+    createServer: {
+      server: {
+        serverId: string,
+        __typename: "ServerType"
+      },
+      __typename: "CreateServerMutation" 
+    }
+  }
+}
 
 export default Vue.extend({
   data: () => {
@@ -58,9 +70,6 @@ export default Vue.extend({
   },
   methods: {
     submit() {
-      let name = this.description
-        .replaceAll(' ', '_')
-        .replaceAll('ä', 'ae').replaceAll
       this.$apollo.mutate({
         mutation: createServerMutation,
         variables: {
@@ -71,6 +80,8 @@ export default Vue.extend({
           allowedUsers: this.allowed_users,
           template: this.$route.params.id,
         },
+      }).then((response: CreateServerResponse)=>{
+        this.$router.push(`/server/${response.data.createServer.server.serverId}`)
       })
     },
   },

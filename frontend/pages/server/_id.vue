@@ -167,9 +167,10 @@
                   ><fa icon="chevron-right"
                 /></span>
                 <input
-                  id="command-box"
                   placeholder="Type a command..."
                   class="w-full text-gray-100 bg-gray-900"
+                  v-model="command"
+                  @keyup.enter="executeCommand"
                 />
               </div>
             </div>
@@ -184,7 +185,8 @@
 import Vue from 'vue'
 import PingDot from '~/components/PingDot.vue'
 import serverQuery from '~/apollo/queries/server.gql'
-import serverStateMutation from '~/apollo/mutations/serverState'
+import serverStateMutation from '~/apollo/mutations/serverState.gql'
+import execCommandMutation from '~/apollo/mutations/execCommand.gql'
 import { bytesToString } from '~/helpers'
 
 export default Vue.extend({
@@ -193,6 +195,7 @@ export default Vue.extend({
     return {
       serverStateMutation: serverStateMutation,
       updatingState: false,
+      command: '',
     }
   },
   methods: {
@@ -210,6 +213,13 @@ export default Vue.extend({
             this.updatingState = false
           }
         })
+    },
+    executeCommand: function () {
+      this.$apollo.mutate({
+        mutation: execCommandMutation,
+        variables: { serverId: this.serverId, command: this.command },
+      })
+      this.command = ''
     },
   },
   watch: {

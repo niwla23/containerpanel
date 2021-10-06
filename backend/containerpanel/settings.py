@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
-import secrets
 import dotenv
 
 dotenv.load_dotenv()
@@ -33,10 +32,8 @@ if os.environ.get('DEBUG'):
 else:
     DEBUG = False
 
-print(ALLOWED_HOSTS)
-
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = secrets.token_hex(32) if DEBUG else "fdsfdsafdsfdafdsafasf"
+SECRET_KEY = os.environ["SECRET_KEY"]
 
 # Application definition
 
