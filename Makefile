@@ -13,6 +13,7 @@ proxy-dev:
 	cd proxy && sudo caddy run Caddyfile
 
 backend-test:
+	sudo systemctl start docker
 	cd backend && sudo venv/bin/python3 manage.py test -v 2
 
 frontend-test:
