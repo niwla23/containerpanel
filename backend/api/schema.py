@@ -1,15 +1,14 @@
 import base64
+import os
 import re
 import secrets
 
 import graphene
-import os
-
 import yaml
+from django.contrib.auth.models import User
+from graphene_django import DjangoObjectType
 
 from api.models import Server
-from graphene_django import DjangoObjectType
-from django.contrib.auth.models import User
 
 
 class ServerStateType(graphene.ObjectType):
