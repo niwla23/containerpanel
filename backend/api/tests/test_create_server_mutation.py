@@ -13,7 +13,8 @@ class CreateServerMutationTestCase(TestCase):
     def setUp(self) -> None:
         self.user1 = User.objects.create_user("user1", "user1@example.com", "5R64o!f84")
 
-    def createServer(self, name: str, description: str, port: int, sftp_port: int, allowed_users: List[int], template: str, options: List[str]):
+    @staticmethod
+    def createServer(name: str, description: str, port: int, sftp_port: int, allowed_users: List[int], template: str, options: List[str]):
         client = Client(schema)
 
         query = """

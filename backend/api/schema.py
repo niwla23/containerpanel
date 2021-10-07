@@ -165,13 +165,16 @@ class Query(graphene.ObjectType):
     server = graphene.Field(ServerType, server_id=graphene.String())
     all_templates = graphene.List(TemplateType)
 
-    def resolve_all_servers(self, info):
+    @staticmethod
+    def resolve_all_servers(info):
         return Server.objects.all()
 
-    def resolve_server(self, info, server_id):
+    @staticmethod
+    def resolve_server(info, server_id):
         return Server.objects.get(pk=server_id)
 
-    def resolve_all_templates(self, info):
+    @staticmethod
+    def resolve_all_templates(info):
         for file in os.scandir("app_templates.v2"):
             with open(file, 'r') as open_file:
                 parsed = yaml.safe_load(open_file.read())
