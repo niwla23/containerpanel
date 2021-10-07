@@ -23,7 +23,7 @@ class ServerType(DjangoObjectType):
     state = graphene.Field(ServerStateType)
     logs = graphene.List(graphene.String)
 
-    def resolve_state(self, info):
+    def resolve_state(self, _info):
         server = Server.objects.get(pk=self.server_id)
         cpu_usage, memory_usage = server.stats
         return {
@@ -32,7 +32,7 @@ class ServerType(DjangoObjectType):
             "memory_usage": memory_usage
         }
 
-    def resolve_logs(self, info):
+    def resolve_logs(self, _info):
         server = Server.objects.get(pk=self.server_id)
         return server.get_logs(50)
 
