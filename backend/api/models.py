@@ -42,10 +42,21 @@ class Server(models.Model):
     container_available = True
 
     def load_docker_client(self):
+        """loads the docker client.
+
+        Loads the docker client instance into the class variable `docker_client` if it is not loaded yet.
+        """
         if not self.docker_client:
             self.docker_client = docker.from_env()
 
     def load_container(self):
+        """loads the container object.
+
+        Loads the main docker container related to this server into the class variable `container`
+        If the container was not found, it sets the class variable `container_available` to `False` and
+        `container` to None
+        If class variable docker_client is `None`, it loads the docker client using `self.load_docker_client()`
+        """
         if not self.docker_client:
             self.load_docker_client()
         if not self.container:
@@ -53,8 +64,17 @@ class Server(models.Model):
                 self.container = self.docker_client.containers.get(str(self.name) + "_main_1")
             except NotFound:
                 self.container_available = False
+                self.container = None
 
     def create(self):
+        """Creates the Docker containers belonging to this server.
+
+        This function should be called after populating a new instance of `Server` with data and saving it.
+        It renders the template given with the values given to the `Server` instance.
+        Then it creates a directory with the servers `name` and creates
+        docker-compose file with the rendered template.
+        In the end it runs `docker-compose up -d` to bring up the project.
+        """
         self.load_docker_client()
         template_config = {
             "mc_version": "1.17",
@@ -87,15 +107,23 @@ class Server(models.Model):
             subprocess.Popen(["docker-compose", "up", "-d"], cwd=path, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).wait()
 
     def power_action(self, action: str):
+        """Performs a power action for the server
+
+        Executes a power event on the main container connected to this server.
+
+        Args:
+            action (str): The action to perform. One of "start", "stop", "restart" or "kill"
+
+        Raises:
+            ValueError: action was not in list of supported power actions.
+        """
         self.load_container()
         if action == "stop":
             self.container.stop()
         elif action == "kill":
             self.container.kill()
         elif action == "start":
-            print("starting")
             self.container.start()
-            print("started")
         elif action == "restart":
             self.container.restart()
         else:
@@ -103,6 +131,11 @@ class Server(models.Model):
 
     @property
     def running(self):
+        """Defines whether or not the server is running
+
+        Returns:
+            bool: `True` means server is running, `False` means it is not.
+        """
         self.load_container()
         if self.container_available:
             return self.container.status == "running"
@@ -166,7 +199,17 @@ class Server(models.Model):
         return result.exit_code, result.output.decode()
 
     def __repr__(self):
+        """Defines how the class should be printed.
+
+        Returns:
+            str: human-readable name of the server
+        """
         return self.description
 
     def __str__(self):
+        """Defines how the class should be converted to a string.
+
+        Returns:
+            str: human-readable name of the server
+        """
         return self.description
