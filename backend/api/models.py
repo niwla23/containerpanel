@@ -106,8 +106,7 @@ class Server(models.Model):
         self.load_container()
         if self.container_available:
             return self.container.status == "running"
-        else:
-            return False
+        return False
 
     @property
     def stats(self):
@@ -145,8 +144,7 @@ class Server(models.Model):
         if self.container_available:
             logs = self.container.logs(tail=lines, timestamps=True).decode().split("\n")
             return logs
-        else:
-            return []
+        return []
 
     def exec_command(self, command: str) -> Tuple[int, str]:
         """Executes a command on the server
