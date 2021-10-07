@@ -167,14 +167,24 @@ class Query(graphene.ObjectType):
     all_templates = graphene.List(TemplateType)
 
     def resolve_all_servers(self, _info):
-        return Server.objects.all()
+        """Returns a list of all servers that the requesting user can see"""
+
+        return Server.objects.all()  # todo: only return servers user is authorized for
 
     def resolve_server(self, _info, server_id):
-        return Server.objects.get(pk=server_id)
+        """Returns the requested fields of the server selected by `server_id`
+
+        Returns:
+            Server: The server matching the query
+        """
+
+        return Server.objects.get(pk=server_id)  # todo: check if user is authorized to access the server
 
     def resolve_all_templates(self, _info):
+        """Returns a list of all available app templates"""
+
         for file in os.scandir("app_templates.v2"):
-            with open(file, 'r') as open_file:
+            with open(file.path, 'r') as open_file:
                 parsed = yaml.safe_load(open_file.read())
                 name = file.name[:-4]
                 title = parsed["name"]

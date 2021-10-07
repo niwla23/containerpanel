@@ -10,10 +10,28 @@ import docker
 
 
 class CreateServerMutationTestCase(TestCase):
+    """Contains tests for creating servers"""
+
     def setUp(self) -> None:
+        """creates a user that we assign the servers to."""
+
         self.user1 = User.objects.create_user("user1", "user1@example.com", "5R64o!f84")
 
     def createServer(self, name: str, description: str, port: int, sftp_port: int, allowed_users: List[int], template: str, options: List[str]):
+        """helper function to create a server
+
+        Creates a new server using the graphql api.
+
+        Args:
+            name (str): Name of the server
+            description (str): human-readable name of the server
+            port (int): port of the main container connected to this server
+            sftp_port (int): port of the sftp container connected to this server
+            allowed_users (list): list of user ids allowed to manage the server
+            template (str): template for the server
+            options (list): List of strings for template specific options
+        """
+
         client = Client(schema)
 
         query = """
@@ -39,6 +57,8 @@ class CreateServerMutationTestCase(TestCase):
         )
 
     def test_create_correct_mt_server(self):
+        """test if normal server creation works"""
+
         self.createServer("unittest_mt_server1", "Unittesting Minetest Server1", 34368, 34369, [self.user1.id], "minetest", ["TEST=33"])
 
         self.assertTrue(os.path.isdir(f"{os.environ['APP_DIR']}/unittest_mt_server1"))  # check if the app dir exists
@@ -55,6 +75,8 @@ class CreateServerMutationTestCase(TestCase):
         subprocess.Popen(["rm", "-rf", "unittest_mt_server1"], cwd=os.environ['APP_DIR'])
 
     def test_create_too_high_port(self):
+        """test if server creation fails on too high port number"""
+
         def create():
             self.createServer("unittest_mt_server1", "Unittesting Minetest Server1", 94368, 94369, [self.user1.id], "minetest", ["TEST=33"])
         self.assertRaisesMessage("port number must be between 1000 and 60000", create)
@@ -67,6 +89,8 @@ class CreateServerMutationTestCase(TestCase):
             pass  # expected behaviour
 
     def test_create_too_high_port_sftp(self):
+        """test if server creation fails with too high sftp port"""
+
         def create():
             self.createServer("unittest_mt_server1", "Unittesting Minetest Server1", 34368, 94369, [self.user1.id], "minetest", ["TEST=33"])
         self.assertRaisesMessage("port number must be between 1000 and 60000", create)
@@ -79,6 +103,8 @@ class CreateServerMutationTestCase(TestCase):
             pass  # expected behaviour
 
     def test_create_too_low_port_sftp(self):
+        """test if server creation fails with too low sftp port"""
+
         def create():
             self.createServer("unittest_mt_server1", "Unittesting Minetest Server1", 34368, 369, [self.user1.id], "minetest", ["TEST=33"])
 
@@ -92,6 +118,8 @@ class CreateServerMutationTestCase(TestCase):
             pass  # expected behaviour
 
     def test_create_too_low_port(self):
+        """test if server creation fails with too low port"""
+
         def create():
             self.createServer("unittest_mt_server1", "Unittesting Minetest Server1", 368, 369, [self.user1.id], "minetest", ["TEST=33"])
         self.assertRaisesMessage("port number must be between 1000 and 60000", create)
@@ -104,6 +132,8 @@ class CreateServerMutationTestCase(TestCase):
             pass  # expected behaviour
 
     def test_create_invalid_name(self):
+        """test if server creation fails with an invalid name"""
+
         def create():
             self.createServer("unittest_mt server1", "Unittesting Minetest Server1", 368, 369, [self.user1.id], "minetest", ["TEST=33"])
         self.assertRaisesMessage("server name may only contain lowercase letters, numbers and underscores", create)
