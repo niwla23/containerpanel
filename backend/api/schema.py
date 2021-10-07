@@ -14,6 +14,7 @@ from django.contrib.auth.models import User
 
 class ServerStateType(graphene.ObjectType):
     """Represents the State (running, cpu and memory) in graphql"""
+
     running = graphene.Boolean()
     cpu_usage = graphene.Float()
     memory_usage = graphene.Float()
@@ -43,6 +44,7 @@ class ServerType(DjangoObjectType):
 
 class TemplateType(graphene.ObjectType):
     """Represents an app templates in graphql"""
+
     name = graphene.String()
     title = graphene.String()
     description = graphene.String()
@@ -50,6 +52,7 @@ class TemplateType(graphene.ObjectType):
 
 class UserType(DjangoObjectType):
     """Represents a django user in graphql"""
+
     class Meta:
         model = User
         fields = ("first_name", "last_name", "id")
@@ -63,6 +66,7 @@ class ServerStateMutation(graphene.Mutation):
     After receiving a state mutation it will keep the request on hold until the server reached the desired state.
     Once the state is correct, the selected fields of the server model are sent back.
     """
+
     class Arguments:
         server_id = graphene.ID()
         action = graphene.String()
@@ -83,6 +87,7 @@ class ExecCommandMutation(graphene.Mutation):
     Commands are simple strings that are executed in the docker container with
     the command_prefix of the server prefixed.
     """
+
     class Arguments:
         server_id = graphene.ID()
         command = graphene.String()
@@ -110,6 +115,7 @@ class CreateServerMutation(graphene.Mutation):
         allowed_users (list): List of user ids allowed to manage the server
 
     """
+
     class Arguments:
         name = graphene.String()
         description = graphene.String()

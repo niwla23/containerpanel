@@ -57,6 +57,7 @@ class Server(models.Model):
         `container` to None
         If class variable docker_client is `None`, it loads the docker client using `self.load_docker_client()`
         """
+
         if not self.docker_client:
             self.load_docker_client()
         if not self.container:
@@ -75,6 +76,7 @@ class Server(models.Model):
         docker-compose file with the rendered template.
         In the end it runs `docker-compose up -d` to bring up the project.
         """
+
         self.load_docker_client()
         template_config = {
             "mc_version": "1.17",
@@ -117,6 +119,7 @@ class Server(models.Model):
         Raises:
             ValueError: action was not in list of supported power actions.
         """
+
         self.load_container()
         if action == "stop":
             self.container.stop()
@@ -136,6 +139,7 @@ class Server(models.Model):
         Returns:
             bool: `True` means server is running, `False` means it is not.
         """
+
         self.load_container()
         if self.container_available:
             return self.container.status == "running"
@@ -150,6 +154,7 @@ class Server(models.Model):
             int: memory_usage
 
         """
+
         self.load_container()
 
         if self.running:
@@ -191,6 +196,7 @@ class Server(models.Model):
         Raises:
             docker.errors.NotFound: the container for this server could not be found
         """
+
         self.load_container()
         print(self.command_prefix)
         result = self.container.exec_run(str(self.command_prefix) + " " + command)
@@ -202,6 +208,7 @@ class Server(models.Model):
         Returns:
             str: human-readable name of the server
         """
+
         return self.description
 
     def __str__(self):
@@ -210,4 +217,5 @@ class Server(models.Model):
         Returns:
             str: human-readable name of the server
         """
+
         return self.description
