@@ -1,4 +1,3 @@
-import asyncio
 import base64
 import re
 import secrets
@@ -7,7 +6,6 @@ import graphene
 import os
 
 import yaml
-from asgiref.sync import sync_to_async
 
 from api.models import Server
 from graphene_django import DjangoObjectType
@@ -15,6 +13,7 @@ from django.contrib.auth.models import User
 
 
 class ServerStateType(graphene.ObjectType):
+    """Represents the State (running, cpu and memory) in graphql"""
     running = graphene.Boolean()
     cpu_usage = graphene.Float()
     memory_usage = graphene.Float()
@@ -43,17 +42,14 @@ class ServerType(DjangoObjectType):
 
 
 class TemplateType(graphene.ObjectType):
+    """Represents an app templates in graphql"""
     name = graphene.String()
     title = graphene.String()
     description = graphene.String()
 
 
-@sync_to_async
-def get_server_async(server_id: str):
-    return Server.objects.get(pk=server_id)
-
-
 class UserType(DjangoObjectType):
+    """Represents a django user in graphql"""
     class Meta:
         model = User
         fields = ("first_name", "last_name", "id")
@@ -74,7 +70,7 @@ class ServerStateMutation(graphene.Mutation):
     server = graphene.Field(ServerType)
 
     @classmethod
-    def mutate(cls, root, info, server_id, action):
+    def mutate(cls, _root, _info, server_id, action):
         server = Server.objects.get(pk=server_id)
         server.power_action(action)
         return ServerStateMutation(server=server)
@@ -95,7 +91,7 @@ class ExecCommandMutation(graphene.Mutation):
     code = graphene.Int()
 
     @classmethod
-    def mutate(cls, root, info, server_id, command):
+    def mutate(cls, _root, _info, server_id, command):
         server = Server.objects.get(pk=server_id)
         code, output = server.exec_command(command)
         return ExecCommandMutation(response=output, code=code)
@@ -126,7 +122,7 @@ class CreateServerMutation(graphene.Mutation):
     server = graphene.Field(ServerType)
 
     @classmethod
-    def mutate(cls, root, info, name: str, description: str, template: str, options: dict, port: int, sftp_port: int,
+    def mutate(cls, _root, _info, name: str, description: str, template: str, options: dict, port: int, sftp_port: int,
                allowed_users: list):
 
         if port > 60000 or port < 1000:
@@ -165,13 +161,13 @@ class Query(graphene.ObjectType):
     server = graphene.Field(ServerType, server_id=graphene.String())
     all_templates = graphene.List(TemplateType)
 
-    def resolve_all_servers(self, info):
+    def resolve_all_servers(self, _info):
         return Server.objects.all()
 
-    def resolve_server(self, info, server_id):
+    def resolve_server(self, _info, server_id):
         return Server.objects.get(pk=server_id)
 
-    def resolve_all_templates(self, info):
+    def resolve_all_templates(self, _info):
         for file in os.scandir("app_templates.v2"):
             with open(file, 'r') as open_file:
                 parsed = yaml.safe_load(open_file.read())
