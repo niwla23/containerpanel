@@ -1,6 +1,6 @@
 function trimUnderscores(input: string): string {
-    let splitted = input.split("_")
-    let new_array: Array<string> = []
+    const splitted = input.split("_")
+    const new_array: Array<string> = []
     splitted.forEach(element => {
         if (element) {
             new_array.push(element)
