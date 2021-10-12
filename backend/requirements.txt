@@ -12,3 +12,4 @@ graphql_ws
 
 daphne
 Twisted[tls,http2]
+django-prometheus~=2.1.0

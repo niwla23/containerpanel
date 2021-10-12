@@ -22,4 +22,5 @@ urlpatterns = [
     path('api/oidc/', include('allauth.urls')),
     path('admin/', admin.site.urls),
     path("api/graphql", GraphQLView.as_view(graphiql=True)),
+    path('', include('django_prometheus.urls')),
 ]
