@@ -2,6 +2,7 @@ import base64
 import os
 import re
 import secrets
+from typing import Dict, List
 
 import graphene
 import yaml
@@ -101,6 +102,17 @@ class ExecCommandMutation(graphene.Mutation):
         return ExecCommandMutation(response=output, code=code)
 
 
+class TemplateOptions(graphene.InputObjectType):
+    """Represents the template specific options. Ex.: server version, game mode
+
+    Args:
+        key (graphene.String): Key for the template option. Ex.: VERSION
+        value (graphene.String): Value for the template option. Ex.: 1.17.1
+    """
+    key = graphene.String()
+    value = graphene.String()
+
+
 class CreateServerMutation(graphene.Mutation):
     """Creates a new server.
 
@@ -119,7 +131,7 @@ class CreateServerMutation(graphene.Mutation):
         name = graphene.String()
         description = graphene.String()
         template = graphene.String()
-        options = graphene.List(graphene.String)
+        options = graphene.List(TemplateOptions)
         port = graphene.Int()
         sftp_port = graphene.Int()
         allowed_users = graphene.List(graphene.ID)
@@ -127,7 +139,7 @@ class CreateServerMutation(graphene.Mutation):
     server = graphene.Field(ServerType)
 
     @classmethod
-    def mutate(cls, _root, _info, name: str, description: str, template: str, options: dict, port: int, sftp_port: int,
+    def mutate(cls, _root, _info, name: str, description: str, template: str, options: List[TemplateOptions], port: int, sftp_port: int,
                allowed_users: list):
 
         if port > 60000 or port < 1000:
@@ -138,6 +150,12 @@ class CreateServerMutation(graphene.Mutation):
 
         if not re.match("^[a-z0-9_]+$", name):
             raise ValueError("server name may only contain lowercase letters, numbers and underscores")
+
+        # todo: check if port is used
+
+        options_dict = {}
+        for option in options:
+            options_dict[str(option.key)] = str(option.value)
 
         server = Server()
         server.name = name
@@ -150,7 +168,7 @@ class CreateServerMutation(graphene.Mutation):
         server.max_cpu_usage = 2
 
         server.save()
-        server.create()
+        server.create(options_dict)
 
         return ServerStateMutation(server=server)
 

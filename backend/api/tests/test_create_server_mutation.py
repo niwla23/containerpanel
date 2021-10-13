@@ -36,7 +36,16 @@ class CreateServerMutationTestCase(TestCase):
 
         query = """
         mutation createServer($name: String!, $description: String!, $port: Int!, $sftpPort: Int!, $allowedUsers: [ID]!, $template: String!) {
-          createServer(name: $name, description: $description, port: $port, sftpPort: $sftpPort, allowedUsers: $allowedUsers, template: $template, options: ["VERSION=1.17"]) {
+        
+          createServer(
+          name: $name,
+          description: $description,
+          port: $port,
+          sftpPort: $sftpPort,
+          allowedUsers: $allowedUsers,
+          template: $template,
+          options: {key: "VERSION", value: "1.17.1"}
+          ) {
             server {
               serverId
             }

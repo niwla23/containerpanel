@@ -1,7 +1,7 @@
 import os
 import subprocess
 from datetime import datetime
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -67,7 +67,7 @@ class Server(models.Model):
                 self.container_available = False
                 self.container = None
 
-    def create(self):
+    def create(self, template_config: Dict[str, str]):
         """Creates the Docker containers belonging to this server.
 
         This function should be called after populating a new instance of `Server` with data and saving it.
@@ -78,14 +78,13 @@ class Server(models.Model):
         """
 
         self.load_docker_client()
-        template_config = {
-            "mc_version": "1.17",
-            "force_redownload": "0"
-        }
+        # template_config = {
+        #     "mc_version": "1.17",
+        #     "force_redownload": "0"
+        # }
         with open(f"app_templates.v2/{self.template}.yml", "r") as file:
             template_string = file.read()
             template = django.template.Template(template_string)
-            print(self.max_memory_usage)
             context = django.template.Context({
                 "name": self.name,
                 "description": self.description,

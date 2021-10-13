@@ -1,31 +1,22 @@
 from api.models import Server
+from django.contrib.auth.models import User
 
 
-def can_manage_server(server: Server, user_id: int):
+def can_manage_server(server: Server, user: User) -> bool:
     """Checks if user with user_id can manage given server
 
     Args:
-        user_id (int): ID of the user that should be checked for permission to access server
-        server (Server): server instance that should be checked
-    """
-    allowed_users = []
-    for j in server.allowed_users.all():
-        allowed_users.append(j.id)
-
-    return user_id in allowed_users
-
-
-def format_env(env: dict) -> str:
-    """Formats a dict of environment variables into a string.
-
-    Args:
-        env (dict): Mapping of environment variable names and their values. Ex.: {"VERSION": "1.12"}
-
+        user (django.contrib.auth.models.user): ID of the user that should be checked for permission to access server
+        server (api.models.Server): server instance that should be checked
     Returns:
-        str: The formatted environment string
+        bool: Whether or not the given user is allowed to access the given server.
     """
-    result = ""
-    for (key, val) in env.items():
-        result = result + "; " + str(key) + "=" + str(val)
-    result = result[1:]
-    return result
+
+    if user.is_superuser or user.is_staff:
+        return True
+
+    allowed_users = []
+    for u in server.allowed_users.all():
+        allowed_users.append(u)
+
+    return user in allowed_users

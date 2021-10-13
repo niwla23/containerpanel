@@ -1,5 +1,23 @@
-mutation createServer($name: String!, $description: String!, $port: Int!, $sftpPort: Int!, $allowedUsers: [ID]!, $template: String!) {
-  createServer(name: $name, description: $description, port: $port, sftpPort: $sftpPort, allowedUsers: $allowedUsers, template: $template, options: ["VERSION=1.17"]) {
+mutation createServer(
+  $name: String!,
+  $description: String!,
+  $port: Int!,
+  $sftpPort: Int!,
+  $allowedUsers: [ID]!,
+  $template: String!,
+  $options: [TemplateOptions]
+  )
+  {
+  createServer(
+    name: $name,
+    description: $description,
+    port: $port,
+    sftpPort: $sftpPort,
+    allowedUsers: $allowedUsers,
+    template: $template,
+    options: $options
+    
+    ) {
     server {
       serverId
     }
