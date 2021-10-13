@@ -36,7 +36,6 @@ class CreateServerMutationTestCase(TestCase):
 
         query = """
         mutation createServer($name: String!, $description: String!, $port: Int!, $sftpPort: Int!, $allowedUsers: [ID]!, $template: String!) {
-        
           createServer(
           name: $name,
           description: $description,
