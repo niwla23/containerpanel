@@ -34,6 +34,7 @@ export default Vue.extend({
       prefetch: true,
       query: allServers,
       pollInterval: 5000,
+      refetchWritePolicy: "overwrite"
     },
   },
   middleware: ["auth"]
