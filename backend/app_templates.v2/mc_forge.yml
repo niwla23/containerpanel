@@ -4,6 +4,8 @@ description: "Minecraft Server with Forge modding api"
 command_prefix: "rcon-cli "
 commands_supported: true
 
+options:
+
 compose_config:
   version: '3'
   services:
@@ -18,6 +20,7 @@ compose_config:
         TYPE: FORGE
         VERSION: "{{template_config.mc_version}}"
         FORCE_REDOWNLOAD: "{{template_config.force_redownload}}"
+        TZ: "{{timezone}}"
       restart: unless-stopped
       deploy:
         resources:
@@ -28,6 +31,8 @@ compose_config:
       image: atmoz/sftp
       ports:
         - "{{sftp_port}}:22"
+      environment:
+        TZ: "{{timezone}}"
       command: root:{{sftp_password}}:1000
       volumes:
         - ./data:/home/finn/upload

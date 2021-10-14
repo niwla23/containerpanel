@@ -42,12 +42,24 @@ class ServerType(DjangoObjectType):
         fields = ("server_id", "description", "name", "command_prefix", "allowed_users", "port", "sftp_port", "host")
 
 
+class TemplateOptions(graphene.ObjectType):
+    """Represents the template specific options. Ex.: server version, game mode
+
+    Args:
+        key (graphene.String): Key for the template option. Ex.: VERSION
+        value (graphene.String): Value for the template option. Ex.: 1.17.1
+    """
+    key = graphene.String()
+    value = graphene.String()
+
+
 class TemplateType(graphene.ObjectType):
     """Represents an app templates in graphql"""
 
     name = graphene.String()
     title = graphene.String()
     description = graphene.String()
+    options = graphene.List(TemplateOptions)
 
 
 class UserType(DjangoObjectType):
@@ -102,7 +114,7 @@ class ExecCommandMutation(graphene.Mutation):
         return ExecCommandMutation(response=output, code=code)
 
 
-class TemplateOptions(graphene.InputObjectType):
+class TemplateOptionsInput(graphene.InputObjectType):
     """Represents the template specific options. Ex.: server version, game mode
 
     Args:
@@ -131,7 +143,7 @@ class CreateServerMutation(graphene.Mutation):
         name = graphene.String()
         description = graphene.String()
         template = graphene.String()
-        options = graphene.List(TemplateOptions)
+        options = graphene.List(TemplateOptionsInput)
         port = graphene.Int()
         sftp_port = graphene.Int()
         allowed_users = graphene.List(graphene.ID)
@@ -139,7 +151,7 @@ class CreateServerMutation(graphene.Mutation):
     server = graphene.Field(ServerType)
 
     @classmethod
-    def mutate(cls, _root, _info, name: str, description: str, template: str, options: List[TemplateOptions], port: int, sftp_port: int,
+    def mutate(cls, _root, _info, name: str, description: str, template: str, options: List[TemplateOptionsInput], port: int, sftp_port: int,
                allowed_users: list):
 
         if port > 60000 or port < 1000:
@@ -151,7 +163,7 @@ class CreateServerMutation(graphene.Mutation):
         if not re.match("^[a-z0-9_]+$", name):
             raise ValueError("server name may only contain lowercase letters, numbers and underscores")
 
-        # todo: check if port is used
+        # todo: check if port is used #26
 
         options_dict = {}
         for option in options:
@@ -183,6 +195,7 @@ class Query(graphene.ObjectType):
     all_servers = graphene.List(ServerType)
     server = graphene.Field(ServerType, server_id=graphene.String())
     all_templates = graphene.List(TemplateType)
+    template = graphene.Field(TemplateType, template_name=graphene.String())
 
     def resolve_all_servers(self, _info):
         """Returns a list of all servers that the requesting user can see"""
@@ -207,7 +220,33 @@ class Query(graphene.ObjectType):
                 name = file.name[:-4]
                 title = parsed["name"]
                 description = parsed["description"]
-                yield {"name": name, "title": title, "description": description}
+                options = parsed["options"]
+                options = {} if not options else options
+                options_formatted = []
+                for option_name, option_default in options.items():
+                    option_formatted = TemplateOptions()
+                    option_formatted.key = option_name
+                    option_formatted.value = option_default
+                    options_formatted.append(option_formatted)
+                yield {"name": name, "title": title, "description": description, "options": options_formatted}
+
+    def resolve_template(self, _info, template_name):
+        """Returns details for the specified template name"""
+
+        with open(f"app_templates.v2/{template_name}.yml", 'r') as open_file:
+            parsed = yaml.safe_load(open_file.read())
+            name = template_name
+            title = parsed["name"]
+            description = parsed["description"]
+            options = parsed["options"]
+            options = {} if not options else options
+            options_formatted = []
+            for option_name, option_default in options.items():
+                option_formatted = TemplateOptions()
+                option_formatted.key = option_name
+                option_formatted.value = option_default
+                options_formatted.append(option_formatted)
+            return {"name": name, "title": title, "description": description, "options": options_formatted}
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

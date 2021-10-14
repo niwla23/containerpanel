@@ -81,6 +81,10 @@ class CreateServerMutationTestCase(TestCase):
         self.assertEqual("running", docker_client.containers.get(f"{name}_main_1").status)
         self.assertEqual("running", docker_client.containers.get(f"{name}_sftp_1").status)
 
+        # verify timezone
+        with open(f"{os.environ['APP_DIR']}/{name}/docker-compose.yml", "r") as compose_file:
+            self.assertTrue("TZ:" in compose_file.read())
+
         # remove test server
         subprocess.Popen(["docker-compose", "down"], cwd=f"{os.environ['APP_DIR']}/{name}").wait()
         subprocess.Popen(["rm", "-rf", name], cwd=os.environ['APP_DIR'])
@@ -121,7 +125,7 @@ class CreateServerMutationTestCase(TestCase):
     def test_create_too_low_port_sftp(self):
         """test if server creation fails with too low sftp port"""
 
-        name = "unittest_mt_server3"
+        name = "unittest_mt_server4"
 
         def create():
             self.createServer(name, "Unittesting Minetest Server1", 34368, 369, [self.user1.id], "minetest", ["TEST=33"])
@@ -138,7 +142,7 @@ class CreateServerMutationTestCase(TestCase):
     def test_create_too_low_port(self):
         """test if server creation fails with too low port"""
 
-        name = "unittest_mt_server4"
+        name = "unittest_mt_server5"
 
         def create():
             self.createServer(name, "Unittesting Minetest Server1", 368, 369, [self.user1.id], "minetest", ["TEST=33"])
@@ -154,7 +158,7 @@ class CreateServerMutationTestCase(TestCase):
 
     def test_create_invalid_name(self):
         """test if server creation fails with an invalid name"""
-        name = "unittest mt_server5"
+        name = "unittest mt_server6"
 
         def create():
             self.createServer(name, "Unittesting Minetest Server1", 368, 369, [self.user1.id], "minetest", ["TEST=33"])

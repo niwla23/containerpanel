@@ -78,10 +78,6 @@ class Server(models.Model):
         """
 
         self.load_docker_client()
-        # template_config = {
-        #     "mc_version": "1.17",
-        #     "force_redownload": "0"
-        # }
         with open(f"app_templates.v2/{self.template}.yml", "r") as file:
             template_string = file.read()
             template = django.template.Template(template_string)
@@ -93,7 +89,8 @@ class Server(models.Model):
                 "sftp_password": self.sftp_password,
                 "max_cpu_usage": self.max_cpu_usage,
                 "max_memory_usage": self.max_memory_usage,
-                "template_config": template_config
+                "template_config": template_config,
+                "timezone": os.environ["TIMEZONE"]
             })
 
             config = yaml.safe_load(template.render(context))

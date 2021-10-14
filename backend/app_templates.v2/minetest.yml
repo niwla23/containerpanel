@@ -4,6 +4,9 @@ description: "an open source voxel game engine with easy modding and game creati
 command_prefix: ""
 commands_supported: false
 
+
+options:
+
 compose_config:
   version: '3'
   services:
@@ -12,7 +15,7 @@ compose_config:
       environment:
         PUID: 1000
         PGID: 1000
-        TZ: Europe/London
+        TZ: "{{timezone}}"
       volumes:
         - ./data:/config/.minetest
       ports:
@@ -28,6 +31,8 @@ compose_config:
       image: atmoz/sftp
       ports:
         - "{{sftp_port}}:22"
+      environment:
+        TZ: "{{timezone}}"
       command: root:{{sftp_password}}:1000
       volumes:
         - ./data:/home/finn/upload

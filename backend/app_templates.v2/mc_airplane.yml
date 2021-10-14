@@ -4,6 +4,11 @@ description: "A stable, optimized, well supported Paper fork."
 command_prefix: "rcon-cli "
 commands_supported: true
 
+options:
+  mc_version: "1.17"
+  force_redownload: 0
+
+
 compose_config:
   version: "3"
   services:
@@ -18,6 +23,7 @@ compose_config:
         TYPE: AIRPLANE
         VERSION: "{{template_config.mc_version}}"
         FORCE_REDOWNLOAD: "{{template_config.force_redownload}}"
+        TZ: "{{timezone}}"
       restart: unless-stopped
       deploy:
         resources:
@@ -28,6 +34,8 @@ compose_config:
       image: atmoz/sftp
       ports:
         - "{{sftp_port}}:22"
+      environment:
+        TZ: "{{timezone}}"
       command: user:{{sftp_password}}
       volumes:
         - ./data:/home/user/upload
