@@ -5,7 +5,7 @@ command_prefix: "rcon-cli "
 commands_supported: true
 
 compose_config:
-  version: '3'
+  version: "3"
   services:
     main:
       image: itzg/minecraft-server:java16
@@ -14,7 +14,7 @@ compose_config:
       volumes:
         - ./data:/data
       environment:
-        EULA: 'true'
+        EULA: "true"
         TYPE: AIRPLANE
         VERSION: "{{template_config.mc_version}}"
         FORCE_REDOWNLOAD: "{{template_config.force_redownload}}"
@@ -22,14 +22,14 @@ compose_config:
       deploy:
         resources:
           limits:
-            cpus: '{{max_cpu_usage}}'
-            memory: '{{max_memory_usage}}M'
+            cpus: "{{max_cpu_usage}}"
+            memory: "{{max_memory_usage}}M"
     sftp:
       image: atmoz/sftp
       ports:
         - "{{sftp_port}}:22"
-      command: root:{{sftp_password}}:1000
+      command: user:{{sftp_password}}
       volumes:
-        - ./data:/home/finn/upload
-
-
+        - ./data:/home/user/upload
+        - /etc/ssh/ssh_host_rsa_key:/etc/ssh/ssh_host_rsa_key:ro
+        - /etc/ssh/ssh_host_ed25519_key:/etc/ssh/ssh_host_ed25519_key:ro
