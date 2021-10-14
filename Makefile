@@ -14,7 +14,7 @@ proxy-dev:
 
 backend-test:
 	sudo systemctl start docker
-	cd backend && sudo venv/bin/python3 manage.py test -v 2
+	cd backend && sudo venv/bin/python3 manage.py test 
 
 frontend-test:
 	cd frontend && yarn test

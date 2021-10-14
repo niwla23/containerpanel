@@ -24,14 +24,14 @@ def create_id() -> str:
 
 
 class Server(models.Model):
-    server_id = models.CharField(primary_key=True, default=create_id, editable=False, max_length=5)
+    server_id = models.CharField(primary_key=True, default=create_id, editable=False, max_length=5, unique=True)
     description = models.CharField(max_length=200)
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, unique=True)
     command_prefix = models.CharField(max_length=400)
     allowed_users = models.ManyToManyField(User, verbose_name="Users allowed to manage this server")
     template = models.CharField(max_length=100)
-    port = models.IntegerField()
-    sftp_port = models.IntegerField()
+    port = models.IntegerField(unique=True)
+    sftp_port = models.IntegerField(unique=True)
     sftp_password = models.CharField(max_length=64)
     max_cpu_usage = models.FloatField()
     max_memory_usage = models.FloatField()
@@ -102,6 +102,10 @@ class Server(models.Model):
             self.command_prefix = config["command_prefix"]
 
             path = f"{os.environ['APP_DIR']}/{self.name}"
+
+            if os.path.exists(path):
+                raise FileExistsError("path is not empty")
+
             subprocess.Popen(["mkdir", "-p", path]).wait()
             with open(f"{os.environ['APP_DIR']}/{self.name}/docker-compose.yml", "w") as compose_file:
                 compose_file.write(compose_config)
