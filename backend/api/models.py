@@ -205,6 +205,24 @@ class Server(models.Model):
         result = self.container.exec_run(str(self.command_prefix) + " " + command)
         return result.exit_code, result.output.decode()
 
+    def is_user_allowed_to_manage(self, user: User) -> bool:
+        """Checks if user with user_id can manage given server
+
+        Args:
+            user (django.contrib.auth.models.user): ID of the user that should be checked for permission to access server
+        Returns:
+            bool: Whether or not the given user is allowed to access the given server.
+        """
+
+        if user.is_superuser or user.is_staff:
+            return True
+
+        allowed_users = []
+        for u in self.allowed_users.all():
+            allowed_users.append(u)
+
+        return user in allowed_users
+
     def __repr__(self):
         """Defines how the class should be printed.
 

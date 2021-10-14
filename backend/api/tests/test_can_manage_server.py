@@ -1,4 +1,3 @@
-from api.helpers import can_manage_server
 from api.models import Server
 from django.contrib.auth.models import User
 
@@ -32,37 +31,37 @@ class ResolveAllTemplatesTestCase(TestCase):
     def test_superuser_can_access_server_with_no_managers(self):
         """test if a superuser account can access a server with no configured managers"""
         self.server1.allowed_users.set([])
-        self.assertTrue(can_manage_server(self.server1, self.superuser1))
+        self.assertTrue(self.server1.is_user_allowed_to_manage(self.superuser1))
 
     def test_superuser_can_access_server_with_normal_managers(self):
         """test if a superuser account can access a server with normal user managers"""
         self.server1.allowed_users.set([self.user1, self.user3])
-        self.assertTrue(can_manage_server(self.server1, self.superuser1))
+        self.assertTrue(self.server1.is_user_allowed_to_manage(self.superuser1))
 
     def test_staff_can_access_server_with_no_managers(self):
         """test if a staff account can access a server with no configured managers"""
         self.server1.allowed_users.set([])
-        self.assertTrue(can_manage_server(self.server1, self.staff1))
+        self.assertTrue(self.server1.is_user_allowed_to_manage(self.staff1))
 
     def test_staff_can_access_server_with_normal_managers(self):
         """test if a staff account can access a server with normal user managers"""
         self.server1.allowed_users.set([self.user1, self.user3])
-        self.assertTrue(can_manage_server(self.server1, self.staff1))
+        self.assertTrue(self.server1.is_user_allowed_to_manage(self.staff1))
 
     def test_allowed_user_can_manage_server(self):
         """test if an allowed user can manage the server"""
         self.server1.allowed_users.set([self.user1, self.user3])
-        self.assertTrue(can_manage_server(self.server1, self.user1))
-        self.assertTrue(can_manage_server(self.server1, self.user3))
+        self.assertTrue(self.server1.is_user_allowed_to_manage(self.user1))
+        self.assertTrue(self.server1.is_user_allowed_to_manage(self.user3))
 
     def test_not_allowed_user_can_not_manage_server(self):
         """test if a not allowed user can not manage the server"""
         self.server1.allowed_users.set([self.user1, self.user3])
-        self.assertFalse(can_manage_server(self.server1, self.user2))
+        self.assertFalse(self.server1.is_user_allowed_to_manage(self.user2))
 
     def test_no_normal_user_can_manage_if_allowed_users_empty(self):
         """test if no normal user can manage the server if no users are configured"""
         self.server1.allowed_users.set([])
-        self.assertFalse(can_manage_server(self.server1, self.user1))
-        self.assertFalse(can_manage_server(self.server1, self.user2))
-        self.assertFalse(can_manage_server(self.server1, self.user3))
+        self.assertFalse(self.server1.is_user_allowed_to_manage(self.user1))
+        self.assertFalse(self.server1.is_user_allowed_to_manage(self.user2))
+        self.assertFalse(self.server1.is_user_allowed_to_manage(self.user3))
