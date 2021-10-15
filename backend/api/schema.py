@@ -86,11 +86,13 @@ class ServerStateMutation(graphene.Mutation):
     server = graphene.Field(ServerType)
 
     @classmethod
-    def mutate(cls, _root, _info, server_id, action):
+    def mutate(cls, _root, info, server_id, action):
         server = Server.objects.get(pk=server_id)
-        server.power_action(action)
-        return ServerStateMutation(server=server)
-
+        if server.is_user_allowed_to_manage(info.context.user):
+            server.power_action(action)
+            return ServerStateMutation(server=server)
+        else:
+            raise Exception("you are not allowed to manage this server")
 
 class ExecCommandMutation(graphene.Mutation):
     """ Executes a command on the Server.
@@ -108,10 +110,13 @@ class ExecCommandMutation(graphene.Mutation):
     code = graphene.Int()
 
     @classmethod
-    def mutate(cls, _root, _info, server_id, command):
+    def mutate(cls, _root, info, server_id, command):
         server = Server.objects.get(pk=server_id)
-        code, output = server.exec_command(command)
-        return ExecCommandMutation(response=output, code=code)
+        if server.is_user_allowed_to_manage(info.context.user):
+            code, output = server.exec_command(command)
+            return ExecCommandMutation(response=output, code=code)
+        else:
+            raise Exception("you are not allowed to manage this server")
 
 
 class TemplateOptionsInput(graphene.InputObjectType):
@@ -197,19 +202,25 @@ class Query(graphene.ObjectType):
     all_templates = graphene.List(TemplateType)
     template = graphene.Field(TemplateType, template_name=graphene.String())
 
-    def resolve_all_servers(self, _info):
+    def resolve_all_servers(self, info):
         """Returns a list of all servers that the requesting user can see"""
+        user = info.context.user
 
-        return Server.objects.all()  # todo: only return servers user is authorized for
+        return Server.objects.filter(allowed_users__in=[user])  # todo: only return servers user is authorized for
 
-    def resolve_server(self, _info, server_id):
+    def resolve_server(self, info, server_id):
         """Returns the requested fields of the server selected by `server_id`
 
         Returns:
             Server: The server matching the query
         """
+        user = info.context.user
 
-        return Server.objects.get(pk=server_id)  # todo: check if user is authorized to access the server
+        result: Server = Server.objects.get(pk=server_id)
+        if result.is_user_allowed_to_manage(user):
+            return result
+        else:
+            raise Exception("you are not allowed to manage this server")
 
     def resolve_all_templates(self, _info):
         """Returns a list of all available app templates"""
