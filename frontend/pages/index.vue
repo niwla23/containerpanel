@@ -3,6 +3,9 @@
     <div v-if="$apollo.loading" class="flex flex-row justify-center">
       <Loader  />
     </div>
+    <div class="text-center" v-else-if="allServers.length === 0">
+      There are no servers assigned to your account.
+    </div>
     <ServerListItem
       v-else
       v-for="server in allServers"
