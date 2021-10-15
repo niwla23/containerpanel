@@ -1,15 +1,14 @@
 import os
+import secrets
 import subprocess
-from datetime import datetime
 from typing import List, Tuple, Dict
 
-from django.db import models
-from django.contrib.auth.models import User
 import django.template
-import secrets
-import yaml
 import docker
+import yaml
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.db import models
 from docker.errors import NotFound
 
 
