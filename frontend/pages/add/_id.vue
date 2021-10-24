@@ -35,6 +35,15 @@
         <option value="2">admin</option>
       </select>
     </div>
+    <section>
+      <TextInput
+        v-for="option in template.options"
+        :key="option.key"
+        :placeholder="option.value"
+        :description="option.key"
+        name="sftp_port"
+      />
+    </section>
     <div class="h-2" />
     <button @click="submit" class="bg-green-600 p-2 rounded-md w-full">
       Create Server
@@ -45,16 +54,17 @@
 <script lang="ts">
 import Vue from 'vue'
 import createServerMutation from '~/apollo/mutations/createServer.gql'
+import templateQuery from '~/apollo/queries/template.gql'
 import { createNameFromDescription } from '~/helpers'
 
 type CreateServerResponse = {
   data: {
     createServer: {
       server: {
-        serverId: string,
-        __typename: "ServerType"
-      },
-      __typename: "CreateServerMutation" 
+        serverId: string
+        __typename: 'ServerType'
+      }
+      __typename: 'CreateServerMutation'
     }
   }
 }
@@ -70,19 +80,34 @@ export default Vue.extend({
   },
   methods: {
     submit() {
-      this.$apollo.mutate({
-        mutation: createServerMutation,
-        variables: {
-          name: createNameFromDescription(this.description),
-          description: this.description,
-          port: this.port,
-          sftpPort: this.sftpPort,
-          allowedUsers: this.allowed_users,
-          template: this.$route.params.id,
-        },
-      }).then((response: CreateServerResponse)=>{
-        this.$router.push(`/server/${response.data.createServer.server.serverId}`)
-      })
+      this.$apollo
+        .mutate({
+          mutation: createServerMutation,
+          variables: {
+            name: createNameFromDescription(this.description),
+            description: this.description,
+            port: this.port,
+            sftpPort: this.sftpPort,
+            allowedUsers: this.allowed_users,
+            template: this.$route.params.id,
+          },
+        })
+        .then((response: CreateServerResponse) => {
+          this.$router.push(
+            `/server/${response.data.createServer.server.serverId}`
+          )
+        })
+    },
+  },
+  apollo: {
+    template: {
+      prefetch: true,
+      query: templateQuery,
+      variables() {
+        return {
+          templateName: this.$route.params.id,
+        }
+      },
     },
   },
 })

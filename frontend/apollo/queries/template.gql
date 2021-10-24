@@ -1,0 +1,10 @@
+query template($templateName: String!) {
+  template(templateName: $templateName) {
+    name
+    description
+    options {
+      key
+      value
+    }
+  }
+}
