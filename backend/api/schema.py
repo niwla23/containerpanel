@@ -51,6 +51,7 @@ class TemplateOptions(graphene.ObjectType):
     """
     key = graphene.String()
     value = graphene.String()
+    description = graphene.String()
 
 
 class TemplateType(graphene.ObjectType):
@@ -93,6 +94,7 @@ class ServerStateMutation(graphene.Mutation):
             return ServerStateMutation(server=server)
         else:
             raise Exception("you are not allowed to manage this server")
+
 
 class ExecCommandMutation(graphene.Mutation):
     """ Executes a command on the Server.
@@ -201,6 +203,7 @@ class Query(graphene.ObjectType):
     server = graphene.Field(ServerType, server_id=graphene.String())
     all_templates = graphene.List(TemplateType)
     template = graphene.Field(TemplateType, template_name=graphene.String())
+    all_users = graphene.List(UserType)
 
     def resolve_all_servers(self, info):
         """Returns a list of all servers that the requesting user can see"""
@@ -258,6 +261,9 @@ class Query(graphene.ObjectType):
                 option_formatted.value = option_default
                 options_formatted.append(option_formatted)
             return {"name": name, "title": title, "description": description, "options": options_formatted}
+
+    def resolve_all_users(self, _info):
+        return User.objects.all()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
