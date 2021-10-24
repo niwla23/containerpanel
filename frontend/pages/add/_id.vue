@@ -31,17 +31,20 @@
         v-model="allowed_users"
         multiple
       >
-        <option value="1">niwla23</option>
-        <option value="2">admin</option>
+        <option v-for="user in allUsers" :key="user.username" :value="user.username">
+          {{ user.username }}
+        </option>
       </select>
     </div>
     <section>
       <TextInput
-        v-for="option in template.options"
+        v-for="option in template ? template.options : []"
         :key="option.key"
         :placeholder="option.value"
         :description="option.key"
-        name="sftp_port"
+        :help="option.description"
+        v-model="options_values[option.key]"
+        :name="option.key"
       />
     </section>
     <div class="h-2" />
@@ -55,6 +58,7 @@
 import Vue from 'vue'
 import createServerMutation from '~/apollo/mutations/createServer.gql'
 import templateQuery from '~/apollo/queries/template.gql'
+import allUsersQuery from '~/apollo/queries/allUsers.gql'
 import { createNameFromDescription } from '~/helpers'
 
 type CreateServerResponse = {
@@ -76,10 +80,19 @@ export default Vue.extend({
       port: '',
       sftpPort: '',
       allowed_users: [],
+      options_values: {},
     }
   },
   methods: {
     submit() {
+      let options_processed = []
+      for (const [key, value] of Object.entries(this.options_values)) {
+        options_processed.push({
+          key: key,
+          value: value,
+        })
+      }
+
       this.$apollo
         .mutate({
           mutation: createServerMutation,
@@ -90,6 +103,7 @@ export default Vue.extend({
             sftpPort: this.sftpPort,
             allowedUsers: this.allowed_users,
             template: this.$route.params.id,
+            options: options_processed,
           },
         })
         .then((response: CreateServerResponse) => {
@@ -108,6 +122,10 @@ export default Vue.extend({
           templateName: this.$route.params.id,
         }
       },
+    },
+    allUsers: {
+      prefetch: true,
+      query: allUsersQuery,
     },
   },
 })

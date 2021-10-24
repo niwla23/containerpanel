@@ -68,7 +68,7 @@ class UserType(DjangoObjectType):
 
     class Meta:
         model = User
-        fields = ("first_name", "last_name", "id")
+        fields = ("first_name", "last_name", "id", "username")
 
 
 class ServerStateMutation(graphene.Mutation):
@@ -150,16 +150,18 @@ class CreateServerMutation(graphene.Mutation):
         name = graphene.String()
         description = graphene.String()
         template = graphene.String()
-        options = graphene.List(TemplateOptionsInput)
         port = graphene.Int()
         sftp_port = graphene.Int()
         allowed_users = graphene.List(graphene.ID)
+        options = graphene.List(TemplateOptionsInput)
 
     server = graphene.Field(ServerType)
 
     @classmethod
-    def mutate(cls, _root, _info, name: str, description: str, template: str, options: List[TemplateOptionsInput], port: int, sftp_port: int,
-               allowed_users: list):
+    def mutate(cls, _root, _info, name: str, description: str, template: str, port: int, sftp_port: int,
+               allowed_users: list, options: list):
+        if not isinstance(options, list):
+            raise ValueError("options must be a list")
 
         if port > 60000 or port < 1000:
             raise ValueError("port number must be between 1000 and 60000")
@@ -172,6 +174,7 @@ class CreateServerMutation(graphene.Mutation):
 
         # todo: check if port is used #26
 
+        print("fdfgsfgs", options)
         options_dict = {}
         for option in options:
             options_dict[str(option.key)] = str(option.value)
@@ -187,6 +190,7 @@ class CreateServerMutation(graphene.Mutation):
         server.max_cpu_usage = 2
 
         server.save()
+        print(options_dict)
         server.create(options_dict)
 
         return ServerStateMutation(server=server)
@@ -234,15 +238,7 @@ class Query(graphene.ObjectType):
                 name = file.name[:-4]
                 title = parsed["name"]
                 description = parsed["description"]
-                options = parsed["options"]
-                options = {} if not options else options
-                options_formatted = []
-                for option_name, option_default in options.items():
-                    option_formatted = TemplateOptions()
-                    option_formatted.key = option_name
-                    option_formatted.value = option_default
-                    options_formatted.append(option_formatted)
-                yield {"name": name, "title": title, "description": description, "options": options_formatted}
+                yield {"name": name, "title": title, "description": description}
 
     def resolve_template(self, _info, template_name):
         """Returns details for the specified template name"""
@@ -253,12 +249,13 @@ class Query(graphene.ObjectType):
             title = parsed["name"]
             description = parsed["description"]
             options = parsed["options"]
-            options = {} if not options else options
+            options = [] if not options else options
             options_formatted = []
-            for option_name, option_default in options.items():
+            for option in options:
                 option_formatted = TemplateOptions()
-                option_formatted.key = option_name
-                option_formatted.value = option_default
+                option_formatted.key = option["key"]
+                option_formatted.value = option["value"]
+                option_formatted.description = option["description"]
                 options_formatted.append(option_formatted)
             return {"name": name, "title": title, "description": description, "options": options_formatted}
 

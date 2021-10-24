@@ -5,7 +5,7 @@ mutation createServer(
   $sftpPort: Int!,
   $allowedUsers: [ID]!,
   $template: String!,
-  $options: [TemplateOptions]
+  $options: [TemplateOptionsInput]
   )
   {
   createServer(

@@ -36,21 +36,31 @@ class CreateServerMutationTestCase(TestCase):
         client = Client(schema)
 
         query = """
-        mutation createServer($name: String!, $description: String!, $port: Int!, $sftpPort: Int!, $allowedUsers: [ID]!, $template: String!) {
-          createServer(
-          name: $name,
-          description: $description,
-          port: $port,
-          sftpPort: $sftpPort,
-          allowedUsers: $allowedUsers,
-          template: $template,
-          options: {key: "VERSION", value: "1.17.1"}
-          ) {
-            server {
-              serverId
+              mutation createServer(
+              $name: String!,
+              $description: String!,
+              $port: Int!,
+              $sftpPort: Int!,
+              $allowedUsers: [ID]!,
+              $template: String!,
+              $options: [TemplateOptionsInput]
+              )
+              {
+              createServer(
+                name: $name,
+                description: $description,
+                port: $port,
+                sftpPort: $sftpPort,
+                allowedUsers: $allowedUsers,
+                template: $template,
+                options: $options
+                
+                ) {
+                server {
+                  serverId
+                }
+              }
             }
-          }
-        }
         """
         client.execute(
             query,
@@ -70,7 +80,7 @@ class CreateServerMutationTestCase(TestCase):
 
         name = "unittest_mt_server1"
 
-        self.createServer(name, "Unittesting Minetest Server1", 34368, 34369, [self.user1.id], "minetest", ["TEST=33"])
+        self.createServer(name, "Unittesting Minetest Server1", 34368, 34369, [self.user1.id], "minetest", [])
 
         self.assertTrue(os.path.isdir(f"{os.environ['APP_DIR']}/{name}"))  # check if the app dir exists
         self.assertTrue(os.path.isfile(f"{os.environ['APP_DIR']}/{name}/docker-compose.yml"))  # check if compose file exists
@@ -94,7 +104,7 @@ class CreateServerMutationTestCase(TestCase):
         name = "unittest_mt_server2"
 
         def create():
-            self.createServer(name, "Unittesting Minetest Server1", 94368, 94369, [self.user1.id], "minetest", ["TEST=33"])
+            self.createServer(name, "Unittesting Minetest Server1", 94368, 94369, [self.user1.id], "minetest", [])
 
         self.assertRaisesMessage("port number must be between 1000 and 60000", create)
 
@@ -111,7 +121,7 @@ class CreateServerMutationTestCase(TestCase):
         name = "unittest_mt_server3"
 
         def create():
-            self.createServer(name, "Unittesting Minetest Server1", 34368, 94369, [self.user1.id], "minetest", ["TEST=33"])
+            self.createServer(name, "Unittesting Minetest Server1", 34368, 94369, [self.user1.id], "minetest", [])
 
         self.assertRaisesMessage("port number must be between 1000 and 60000", create)
 
@@ -128,7 +138,7 @@ class CreateServerMutationTestCase(TestCase):
         name = "unittest_mt_server4"
 
         def create():
-            self.createServer(name, "Unittesting Minetest Server1", 34368, 369, [self.user1.id], "minetest", ["TEST=33"])
+            self.createServer(name, "Unittesting Minetest Server1", 34368, 369, [self.user1.id], "minetest", [])
 
         self.assertRaisesMessage("port number must be between 1000 and 60000", create)
 
@@ -145,7 +155,7 @@ class CreateServerMutationTestCase(TestCase):
         name = "unittest_mt_server5"
 
         def create():
-            self.createServer(name, "Unittesting Minetest Server1", 368, 369, [self.user1.id], "minetest", ["TEST=33"])
+            self.createServer(name, "Unittesting Minetest Server1", 368, 369, [self.user1.id], "minetest", [])
 
         self.assertRaisesMessage("port number must be between 1000 and 60000", create)
 
@@ -161,7 +171,7 @@ class CreateServerMutationTestCase(TestCase):
         name = "unittest mt_server6"
 
         def create():
-            self.createServer(name, "Unittesting Minetest Server1", 368, 369, [self.user1.id], "minetest", ["TEST=33"])
+            self.createServer(name, "Unittesting Minetest Server1", 368, 369, [self.user1.id], "minetest", [])
 
         self.assertRaisesMessage("server name may only contain lowercase letters, numbers and underscores", create)
 
@@ -185,7 +195,7 @@ class CreateServerMutationTestCase(TestCase):
         os.mkdir(path)
 
         def create():
-            self.createServer(name, "Unittesting Minetest Server1", 34368, 34369, [self.user1.id], "minetest", ["TEST=33"])
+            self.createServer(name, "Unittesting Minetest Server1", 34368, 34369, [self.user1.id], "minetest", [])
 
         self.assertRaisesMessage("path is not empty", create)
 
@@ -201,10 +211,10 @@ class CreateServerMutationTestCase(TestCase):
         """test if server creation fails when server name is used"""
         name = "unittest_name_duplicate"
 
-        self.createServer(name, "Unittesting Minetest Server1", 34368, 34369, [self.user1.id], "minetest", ["TEST=33"])
+        self.createServer(name, "Unittesting Minetest Server1", 34368, 34369, [self.user1.id], "minetest", [])
 
         def create():
-            self.createServer(name, "Unittesting Minetest Server1", 34368, 34369, [self.user1.id], "minetest", ["TEST=33"])
+            self.createServer(name, "Unittesting Minetest Server1", 34368, 34369, [self.user1.id], "minetest", [])
 
         self.assertRaisesMessage("path is not empty", create)
 

@@ -5,6 +5,7 @@ query template($templateName: String!) {
     options {
       key
       value
+      description
     }
   }
 }

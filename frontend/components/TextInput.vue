@@ -1,7 +1,7 @@
 
 <template>
   <section>
-    <label :for="name">{{ description }}</label>
+    <label :for="name">{{ description }} <small v-if="help" class="text-gray-300"> - {{help}}</small></label>
     <input
       :id="name"
       :name="name"
@@ -17,6 +17,6 @@
 import Vue from 'vue'
 
 export default Vue.extend({
-  props: ['value', 'placeholder', 'name', 'description'],
+  props: ['value', 'placeholder', 'name', 'description', 'help'],
 })
 </script>
