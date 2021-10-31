@@ -2,7 +2,7 @@ import base64
 import os
 import re
 import secrets
-from typing import Dict, List
+from api.helpers import is_port_in_use
 
 import graphene
 import yaml
@@ -172,7 +172,11 @@ class CreateServerMutation(graphene.Mutation):
         if not re.match("^[a-z0-9_]+$", name):
             raise ValueError("server name may only contain lowercase letters, numbers and underscores")
 
-        # todo: check if port is used #26
+        if is_port_in_use(port):
+            raise ValueError("server port is already in use")
+
+        if is_port_in_use(sftp_port):
+            raise ValueError("sftp port is already in use")
 
         print("fdfgsfgs", options)
         options_dict = {}
