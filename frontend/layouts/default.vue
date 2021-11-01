@@ -8,18 +8,20 @@
       </div>
       <div class="flex-grow"></div>
       <section class="flex flex-col justify-center">
-        <div class="text-white pr-4"><NuxtLink to="/choose_template">+</NuxtLink></div>
+        <div class="text-white pr-4">
+          <NuxtLink to="/choose_template">+</NuxtLink>
+        </div>
       </section>
       <section class="flex flex-col justify-center">
         <div class="text-white">
           <a
             href="https://auth.cloudserver.click/auth/realms/cloudserver-user/account/#/"
-            >niwla23</a
+            >{{ this.$store.state.username }}</a
           >
         </div>
       </section>
     </div>
-    <main class="p-6 pt-8 lg:p-24 lg:pt-12 ">
+    <main class="p-6 pt-8 lg:p-24 lg:pt-12">
       <Nuxt />
     </main>
   </div>
@@ -54,3 +56,12 @@
   scrollbar-color: #1f2937 #111827; /* scroll thumb and track */
 }
 </style>
+
+<script lang="ts">
+import Vue from 'vue'
+export default Vue.extend({
+  mounted() {
+    this.$store.dispatch('fetchUsername')
+  },
+})
+</script>

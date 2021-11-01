@@ -1,4 +1,4 @@
-from django.http import JsonResponse, HttpRequest
+from django.http import JsonResponse, HttpResponse
 from channels.http import AsgiRequest
 
 
@@ -16,3 +16,17 @@ def is_authenticated(request: AsgiRequest) -> JsonResponse:
     """
 
     return JsonResponse({"is_authenticated": request.user.is_authenticated})
+
+
+def get_username(request: AsgiRequest) -> HttpResponse:
+    """Returns the username of the current user
+
+    Args:
+        request (AsgiRequest): The incoming request
+
+    Returns:
+        str: username of logged-in user
+
+    """
+
+    return HttpResponse(request.user.username)

@@ -9,4 +9,5 @@ from . import views
 
 urlpatterns = [
     path('is_authenticated', views.is_authenticated, name='is_authenticated'),
+    path('username', views.get_username, name='username')
 ]
