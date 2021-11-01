@@ -6,6 +6,7 @@ query server($serverId: String!) {
     allowedUsers {
       firstName
       lastName
+      username
       id
     }
     state {

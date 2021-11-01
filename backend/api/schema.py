@@ -178,10 +178,13 @@ class CreateServerMutation(graphene.Mutation):
         if is_port_in_use(sftp_port):
             raise ValueError("sftp port is already in use")
 
-        print("fdfgsfgs", options)
         options_dict = {}
         for option in options:
             options_dict[str(option.key)] = str(option.value)
+
+        allowed_users_formatted = []
+        for user in allowed_users:
+            allowed_users_formatted.append(User.objects.get(pk=user))
 
         server = Server()
         server.name = name
@@ -192,9 +195,9 @@ class CreateServerMutation(graphene.Mutation):
         server.sftp_password = base64.b64encode(secrets.token_hex(6).encode()).decode("utf-8")
         server.max_memory_usage = 4000
         server.max_cpu_usage = 2
-
         server.save()
-        print(options_dict)
+        server.allowed_users.set(allowed_users_formatted)
+        server.save()
         server.create(options_dict)
 
         return ServerStateMutation(server=server)

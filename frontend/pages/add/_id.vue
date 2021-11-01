@@ -31,7 +31,7 @@
         v-model="allowed_users"
         multiple
       >
-        <option v-for="user in allUsers" :key="user.username" :value="user.username">
+        <option v-for="user in allUsers" :key="user.username" :value="user.id">
           {{ user.username }}
         </option>
       </select>

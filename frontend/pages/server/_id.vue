@@ -129,8 +129,8 @@
           <div class="bg-gray-800 p-4 rounded-md flex-grow">
             <h2 class="text-lg">User Access</h2>
             <ul class="text-gray-400 list-disc pl-4">
-              <li v-for="user in server.allowed_users" :key="user">
-                {{ user }}
+              <li v-for="user in server.allowedUsers" :key="user.id">
+                {{ user.username }}
               </li>
             </ul>
           </div>

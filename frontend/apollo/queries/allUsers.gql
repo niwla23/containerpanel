@@ -3,5 +3,6 @@ query allUsers {
     firstName
     lastName
     username
+    id
   }
 }
