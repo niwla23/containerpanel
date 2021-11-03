@@ -7,9 +7,7 @@
       <h1 class="text-xl">{{ server.description }}</h1>
       <div
         class="
-          md:flex md:flex-row
-          md:w-full
-          md:space-x-4
+          md:flex md:flex-row md:w-full md:space-x-4
           space-y-4
           md:space-y-0
         "
@@ -157,8 +155,16 @@
               >
                 <br />
                 <transition-group name="logs" tag="ul">
-                  <li v-for="line in server.logs" :key="line">
-                    {{ line.split(' ').slice(1).join(' ') }}
+                  <li
+                    v-for="line in logOutput"
+                    :key="line.timestamp + line.content"
+                    :class="{
+                      'text-yellow-600': line.source === 'command_input',
+                      'text-green-600': line.source === 'command_output',
+                    }"
+                  >
+                  <span v-if="line.source === 'command_input'">></span>
+                    {{ line.content }}
                   </li>
                 </transition-group>
               </code>
@@ -196,6 +202,8 @@ export default Vue.extend({
       serverStateMutation: serverStateMutation,
       updatingState: false,
       command: '',
+      command_inputs: [],
+      command_outputs: [],
     }
   },
   methods: {
@@ -214,10 +222,20 @@ export default Vue.extend({
           }
         })
     },
-    executeCommand: function () {
-      this.$apollo.mutate({
+    executeCommand: async function () {
+      this.command_inputs.push({
+        content: this.command,
+        timestamp: new Date().getTime() / 1000,
+        source: 'command_input',
+      })
+      let output = await this.$apollo.mutate({
         mutation: execCommandMutation,
         variables: { serverId: this.serverId, command: this.command },
+      })
+      this.command_outputs.push({
+        timestamp: new Date().getTime() / 1000,
+        content: output.data.execCommand.response,
+        source: 'command_output',
       })
       this.command = ''
     },
@@ -243,6 +261,12 @@ export default Vue.extend({
   computed: {
     serverId: function () {
       return this.$route.params.id
+    },
+    logOutput: function () {
+      let merged = this.server.logs.concat(this.command_outputs)
+      merged = merged.concat(this.command_inputs)
+      merged = merged.sort((a, b) => a.timestamp - b.timestamp)
+      return merged
     },
   },
 

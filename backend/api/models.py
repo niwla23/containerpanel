@@ -1,7 +1,8 @@
 import os
 import secrets
 import subprocess
-from typing import List, Tuple, Dict
+import time
+from typing import List, Tuple, Dict, Any
 
 import django.template
 import docker
@@ -10,6 +11,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from docker.errors import NotFound
+from dateutil.parser import isoparse
 
 
 def create_id() -> str:
@@ -167,7 +169,7 @@ class Server(models.Model):
             return cpu_usage, memory_usage
         return 0, 0
 
-    def get_logs(self, lines: int) -> List[str]:
+    def get_logs(self, lines: int) -> List[Dict]:
         """Returns the last log lines as list of strings.
 
         Args:
@@ -180,7 +182,16 @@ class Server(models.Model):
         self.load_container()
         if self.container_available:
             logs = self.container.logs(tail=lines, timestamps=True).decode().split("\n")
-            return logs
+            logs_formatted = []
+            for line in logs:
+                print(line)
+                try:
+                    split = line.split(" ")
+                    timestamp = time.mktime(isoparse(split[0]).timetuple())
+                    logs_formatted.append({"timestamp": timestamp, "content": ' '.join(split[1:]), "source": "log"})
+                except ValueError:
+                    pass
+            return logs_formatted
         return []
 
     def exec_command(self, command: str) -> Tuple[int, str]:

@@ -6,6 +6,7 @@ from api.helpers import is_port_in_use
 
 import graphene
 import yaml
+
 from django.contrib.auth.models import User
 from graphene_django import DjangoObjectType
 
@@ -20,9 +21,17 @@ class ServerStateType(graphene.ObjectType):
     memory_usage = graphene.Float()
 
 
+class LogLineType(graphene.ObjectType):
+    """Represents a line in container logs"""
+
+    timestamp = graphene.Int()
+    content = graphene.String()
+    source = graphene.String()
+
+
 class ServerType(DjangoObjectType):
     state = graphene.Field(ServerStateType)
-    logs = graphene.List(graphene.String)
+    logs = graphene.List(LogLineType)
 
     def resolve_state(self, _info):
         server = Server.objects.get(pk=self.server_id)
@@ -186,6 +195,10 @@ class CreateServerMutation(graphene.Mutation):
         for user in allowed_users:
             allowed_users_formatted.append(User.objects.get(pk=user))
 
+        with open(f"app_templates.v2/{template}.yml", 'r') as open_file:
+            parsed = yaml.safe_load(open_file.read())
+            command_prefix = parsed.get("command_prefix")
+
         server = Server()
         server.name = name
         server.description = description
@@ -195,6 +208,7 @@ class CreateServerMutation(graphene.Mutation):
         server.sftp_password = base64.b64encode(secrets.token_hex(6).encode()).decode("utf-8")
         server.max_memory_usage = 4000
         server.max_cpu_usage = 2
+        server.command_prefix = command_prefix
         server.save()
         server.allowed_users.set(allowed_users_formatted)
         server.save()

@@ -17,6 +17,10 @@ query server($serverId: String!) {
   host
 	port
   sftpPort
-  logs
+  logs {
+    timestamp
+    content
+    source
+  }
   }
 }
