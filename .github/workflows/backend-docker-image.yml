@@ -14,10 +14,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.CR_PAT }}
+        
     - name: Build and push
       uses: docker/build-push-action@v2
       with:
         context: backend
         file: backend/Dockerfile
         push: true
-        tags: containerpanel-backend:latest
+        tags: ghcr.io/niwla23/containerpanel-backend:latest
