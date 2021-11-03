@@ -14,5 +14,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Docker image
-      run: docker build backend --tag containerpanel-backend:$(date +%s) --tag containerpanel-backend:latest
+    - name: Build and push
+      uses: docker/build-push-action@v2
+      with:
+        context: backend
+        file: backend/Dockerfile
+        push: true
+        tags: containerpanel-backend:latest
