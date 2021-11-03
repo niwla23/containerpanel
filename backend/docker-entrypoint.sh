@@ -17,4 +17,5 @@ fi
 # Start server
 echo "Starting server"
 #uvicorn containerpanel.asgi:application
-daphne -b 0.0.0.0 -p 8000 containerpanel.asgi:application
+gunicorn containerpanel.wsgi --bind 0.0.0.0:8000
+
