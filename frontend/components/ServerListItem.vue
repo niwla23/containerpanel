@@ -9,7 +9,6 @@
           w-full
           p-4
           text-white text-left
-          overflow-scroll
         "
       >
         <div class="flex flex-row flex-nowrap lg:flex-nowrap">
