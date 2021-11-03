@@ -1,4 +1,4 @@
-FROM node as builder
+FROM node:17.0 as builder
 ADD frontend /frontend
 WORKDIR /frontend
 RUN yarn && yarn generate
