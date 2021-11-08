@@ -184,7 +184,6 @@ class Server(models.Model):
             logs = self.container.logs(tail=lines, timestamps=True).decode().split("\n")
             logs_formatted = []
             for line in logs:
-                print(line)
                 try:
                     split = line.split(" ")
                     timestamp = time.mktime(isoparse(split[0]).timetuple())

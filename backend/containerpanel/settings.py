@@ -10,8 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
+
 import dotenv
 
 dotenv.load_dotenv()
@@ -83,15 +84,12 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-
 ROOT_URLCONF = 'containerpanel.urls'
-
 
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 CSRF_TRUSTED_ORIGINS = [
     "localhost:3000",
 ]
-
 
 TEMPLATES = [
     {
@@ -115,13 +113,24 @@ ASGI_APPLICATION = 'graphql_ws.django.routing.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if os.environ.get("DB_TYPE") == "MARIADB":
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.environ["DB_NAME"],
+            'USER': os.environ["DB_USER"],
+            'PASSWORD': os.environ["DB_PASSWORD"],
+            'HOST': os.environ["DB_HOST"],
+            'PORT': os.environ["DB_PORT"],
+        }
     }
-}
-
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
