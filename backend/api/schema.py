@@ -233,8 +233,11 @@ class Query(graphene.ObjectType):
     def resolve_all_servers(self, info):
         """Returns a list of all servers that the requesting user can see"""
         user = info.context.user
-
-        return Server.objects.filter(allowed_users__in=[user])  # todo: only return servers user is authorized for
+        filtered_servers = []
+        for server in Server.objects.all():
+            if server.is_user_allowed_to_manage(user):
+                filtered_servers.append(server)
+        return filtered_servers
 
     def resolve_server(self, info, server_id):
         """Returns the requested fields of the server selected by `server_id`
