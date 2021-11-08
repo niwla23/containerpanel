@@ -25,7 +25,7 @@ def create_id() -> str:
 
 
 class Server(models.Model):
-    server_id = models.CharField(primary_key=True, default=create_id, editable=False, max_length=5, unique=True)
+    server_id = models.CharField(primary_key=True, default=create_id, editable=False, max_length=16, unique=True)
     description = models.CharField(max_length=200)
     name = models.CharField(max_length=200, unique=True)
     command_prefix = models.CharField(max_length=400)
