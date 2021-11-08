@@ -106,6 +106,12 @@
                   </tr>
                   <tr>
                     <td>
+                      <fa icon="key" class="mr-1" />
+                    </td>
+                    <td class="pl-1 bg-gray-900 text-gray-900 rounded-md hover:text-white transition delay-200 duration-300">{{ server.sftpPassword }}</td>
+                  </tr>
+                  <tr>
+                    <td>
                       <fa icon="microchip" class="mr-1" />
                     </td>
                     <td class="pl-1">
@@ -163,7 +169,7 @@
                       'text-green-600': line.source === 'command_output',
                     }"
                   >
-                  <span v-if="line.source === 'command_input'">></span>
+                    <span v-if="line.source === 'command_input'">></span>
                     {{ line.content }}
                   </li>
                 </transition-group>

@@ -48,7 +48,7 @@ class ServerType(DjangoObjectType):
 
     class Meta:
         model = Server
-        fields = ("server_id", "description", "name", "command_prefix", "allowed_users", "port", "sftp_port", "host")
+        fields = ("server_id", "description", "name", "command_prefix", "allowed_users", "port", "sftp_port", "sftp_password", "host")
 
 
 class TemplateOptions(graphene.ObjectType):

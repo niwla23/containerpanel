@@ -52,7 +52,7 @@ export default {
         //import whole set
         {
           set: '@fortawesome/free-solid-svg-icons',
-          icons: ['faMicrochip', 'faEthernet', 'faMemory', 'faSave', 'faTerminal', 'faChevronRight', 'faCog']
+          icons: ['faMicrochip', 'faEthernet', 'faMemory', 'faSave', 'faTerminal', 'faChevronRight', 'faCog', 'faKey']
         },
       ]
     }]

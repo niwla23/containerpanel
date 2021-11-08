@@ -17,6 +17,7 @@ query server($serverId: String!) {
   host
 	port
   sftpPort
+  sftpPassword
   logs {
     timestamp
     content
