@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-RUN apt-get update && apt-get -y install docker libmariadb-dev python-mysqldb
+RUN apt-get update && apt-get -y install docker libmariadb-dev python-mysqldb gcc
 
 RUN pip3 install docker-compose
 
