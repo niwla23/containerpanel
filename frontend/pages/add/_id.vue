@@ -48,7 +48,11 @@
       />
     </section>
     <div class="h-2" />
-    <button @click="submit" class="bg-green-600 p-2 rounded-md w-full">
+    <button
+      @click="submit"
+      class="bg-green-600 p-2 rounded-md w-full"
+      :class="{ 'animate-pulse': loading }"
+    >
       Create Server
     </button>
   </div>
@@ -81,10 +85,12 @@ export default Vue.extend({
       sftpPort: '',
       allowed_users: [],
       options_values: {},
+      loading: false,
     }
   },
   methods: {
-    submit() {
+    async submit() {
+      this.loading = true
       let options_processed = []
       for (const [key, value] of Object.entries(this.options_values)) {
         options_processed.push({
@@ -93,8 +99,8 @@ export default Vue.extend({
         })
       }
 
-      this.$apollo
-        .mutate({
+      try {
+        let response: CreateServerResponse = await this.$apollo.mutate({
           mutation: createServerMutation,
           variables: {
             name: createNameFromDescription(this.description),
@@ -106,11 +112,14 @@ export default Vue.extend({
             options: options_processed,
           },
         })
-        .then((response: CreateServerResponse) => {
-          this.$router.push(
-            `/server/${response.data.createServer.server.serverId}`
-          )
-        })
+
+        this.$router.push(
+          `/server/${response.data.createServer.server.serverId}`
+        )
+      } catch (err) {
+        this.loading = false
+        alert(err)
+      }
     },
   },
   apollo: {
