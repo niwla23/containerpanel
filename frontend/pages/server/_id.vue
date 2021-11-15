@@ -115,7 +115,7 @@
                       <fa icon="microchip" class="mr-1" />
                     </td>
                     <td class="pl-1">
-                      {{ server.state.cpuUsage.toFixed(2) * 100 }}%
+                      {{ (server.state.cpuUsage * 100).toFixed(2) }}%
                     </td>
                   </tr>
                   <tr>
