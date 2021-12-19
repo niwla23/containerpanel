@@ -33,8 +33,10 @@ compose_config:
         - "{{sftp_port}}:22"
       environment:
         TZ: "{{timezone}}"
-      command: root:{{sftp_password}}:1000
+      command: user:{{sftp_password}}
       volumes:
-        - ./data:/home/finn/upload
+        - ./data:/home/user/upload
+        - /etc/ssh/ssh_host_rsa_key:/etc/ssh/ssh_host_rsa_key:ro
+        - /etc/ssh/ssh_host_ed25519_key:/etc/ssh/ssh_host_ed25519_key:ro
 
 
